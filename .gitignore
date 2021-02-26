@@ -4,3 +4,8 @@ tests
 scripts
 result
 data
+test.py
+
+.idea
+__pycache__
+Pipfile.lock

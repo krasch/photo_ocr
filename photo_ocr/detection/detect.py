@@ -7,7 +7,7 @@ from photo_ocr.detection.craft.models.craft import craft as load_craft
 from photo_ocr.detection.craft.models.refinenet import refine_net as load_refine_net
 from photo_ocr.detection.craft.preprocessing import prepare_image
 from photo_ocr.detection.craft import postprocessing
-from refactoraid import refactoraid
+# from refactoraid import refactoraid
 
 CUDA = torch.cuda.is_available()
 
