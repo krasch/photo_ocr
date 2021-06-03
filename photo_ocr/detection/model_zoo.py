@@ -1,30 +1,40 @@
+from collections import OrderedDict
+
 from torchvision.models.utils import load_state_dict_from_url
 
+from photo_ocr.util.cuda import DEVICE
 from photo_ocr.detection.craft.model import CraftTextDetectionModel
 
-# 1. These weights use different layer names than the original ones. Why?
-# The original repository contains links to weights in a google drive.
-# It seems like the original weights were saved with different layer names than the final code, so loading
-# the weights into a model, it was first necessary to rename some layers.
-# To avoid all this extra code, stored the weights with the correct names.
-# 2. How the weights were stored
-# _use_new_zipfile_serialization=True because load_state_dict_from_url broken with new zipfile format
-# 3. TL;DR:
-# -> these weights are exactly the same as the original ones, just use the correct layer names
+
 model_urls = {
-    "craft": "https://photoocr.s3-eu-west-1.amazonaws.com/craft_mlt_25k.pth",
-    "refine_net": "https://photoocr.s3-eu-west-1.amazonaws.com/craft_refiner_CTW1500.pth",
+    "craft": "https://drive.google.com/uc?id=1Jk4eGD7crsqCCg9C9VjCLkMN3ze8kutZ",
+    "refine_net": "https://drive.google.com/uc?id=1XSaFwBkOaFOdtk4Ane3DFyJGPRw6v5bO",
 }
 
 
 def craft(pretrained, progress):
+
+    # remove "module." from beginning of all layer names
+    def rename_layers(weights):
+        weights = OrderedDict([(layer_name[7:], layer_weights) for layer_name, layer_weights in weights.items()])
+        return weights
+
     model = CraftTextDetectionModel()
 
+    # need to provide filename because otherwise files from google drive are all stored under the same name
     if pretrained:
-        state_dict = load_state_dict_from_url(model_urls['craft'], progress=progress)
+        # load the weights for the main craft model
+        state_dict = load_state_dict_from_url(model_urls['craft'],
+                                              file_name="craft_mlt_25k.pth",
+                                              progress=progress, map_location=DEVICE)
+        state_dict = rename_layers(state_dict)
         model.craft.load_state_dict(state_dict)
 
-        state_dict = load_state_dict_from_url(model_urls['refine_net'], progress=progress)
+        # load the weights for the additional refiner model
+        state_dict = load_state_dict_from_url(model_urls['refine_net'],
+                                              file_name="craft_refiner_CTW1500.pth",
+                                              progress=progress, map_location=DEVICE)
+        state_dict = rename_layers(state_dict)
         model.refiner.load_state_dict(state_dict)
 
     return model

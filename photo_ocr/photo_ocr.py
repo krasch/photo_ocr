@@ -9,8 +9,9 @@ from photo_ocr.recognition.recognition import Recognition, RecognitionResult
 from photo_ocr.util.image import crop_and_align
 
 
+# todo depreciation warning
 # todo download all models method
-# todo download from gdrive detection
+# todo sort out bbdraw
 
 class InputType(Enum):
     SINGLE_IMAGE = 1

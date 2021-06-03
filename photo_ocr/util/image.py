@@ -6,7 +6,7 @@ import numpy as np
 
 from PIL import Image
 
-from bbdraw import bbdraw
+from photo_ocr.util import bbdraw
 
 
 def load_image(path: Union[Path, str]) -> Image.Image:
