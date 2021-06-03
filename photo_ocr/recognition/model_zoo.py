@@ -6,10 +6,12 @@ from photo_ocr.cuda import DEVICE
 from photo_ocr.recognition.models.base import TextRecognitionModel
 from photo_ocr.recognition.models.modules.wrappers import transformation, feature_extraction, sequence_modeling, prediction
 
+# these are the characters that the models were trained with
 CHARACTERS = list("0123456789abcdefghijklmnopqrstuvwxyz")
 CHARACTERS_CASE_SENSITIVE = CHARACTERS + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~")
 
 
+# model urls linked in original repo
 model_urls = {
     "None_VGG_None_CTC": "https://www.dropbox.com/sh/j3xmli4di1zuv3s/AACpKykhWSRBUU7xl2LGgt9ja/None-VGG-None-CTC.pth?dl=1",
     "None_ResNet_None_CTC": "https://www.dropbox.com/sh/j3xmli4di1zuv3s/AABzCC1KGbIRe2wRwa3diWKwa/None-ResNet-None-CTC.pth?dl=1",

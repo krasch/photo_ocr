@@ -37,7 +37,7 @@ class PadRight(object):
 
         # image is already wider than target with, can't pad
         if current_width > self.target_width:
-            raise Exception("WTF??")
+            raise ValueError("Image is already wider than target with, can't pad")
 
         pad = self.target_width - current_width
         transform = transforms.Pad((0, 0, pad, 0), padding_mode="edge")

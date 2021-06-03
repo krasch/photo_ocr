@@ -17,6 +17,7 @@ class TextRecognitionModel(nn.Module):
         # transform image so text is more rectangular (optional)
         # input shape: [batch_size, num_channels=1, image_width, image_height]
         # output shape: same as input shape
+        # not to be confused with pytorch transforms, this is an actual model!
         batch = self.transformation(batch)
 
         # extract visual features
