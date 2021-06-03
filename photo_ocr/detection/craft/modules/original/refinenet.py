@@ -1,3 +1,5 @@
+# copied from https://github.com/clovaai/CRAFT-pytorch/blob/3cd65f5a7bb6cbba8ed3844e385aaffe7d7e103e/refinenet.py
+
 """
 Copyright (c) 2019-present NAVER Corp.
 MIT License

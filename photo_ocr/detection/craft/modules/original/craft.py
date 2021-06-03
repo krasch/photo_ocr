@@ -1,3 +1,5 @@
+# copied from https://github.com/clovaai/CRAFT-pytorch/blob/6c809d409996d4516e393f04e89965f070ecc14a/craft.py
+
 """
 Copyright (c) 2019-present NAVER Corp.
 MIT License

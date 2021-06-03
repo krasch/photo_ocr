@@ -1,3 +1,5 @@
+# copied from https://github.com/clovaai/CRAFT-pytorch/blob/650632053d0c1ce54aaab39ed82b0d9ba6392e5a/basenet/vgg16_bn.py
+
 from collections import namedtuple
 
 import torch
