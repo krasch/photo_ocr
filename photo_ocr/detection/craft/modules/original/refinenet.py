@@ -1,30 +1,18 @@
 """
 Copyright (c) 2019-present NAVER Corp.
+MIT License
 """
 
-
+# -*- coding: utf-8 -*-
 import torch
 import torch.nn as nn
-from torchvision.models.utils import load_state_dict_from_url
+import torch.nn.functional as F
+from torch.autograd import Variable
 
-from photo_ocr.detection.craft.models.utils import init_weights
-
-
-# 1. These weights use different layer names than the original ones. Why?
-# The original repository contains links to weights in a google drive.
-# It seems like the original weights were saved with different layer names than the final code, so loading
-# the weights into a model, it was first necessary to rename some layers.
-# To avoid all this extra code, stored the weights with the correct names.
-# 2. How the weights were stored
-# _use_new_zipfile_serialization=True because load_state_dict_from_url broken with new zipfile format
-# 3. TL;DR:
-# -> these weights are exactly the same as the original ones, just use the correct layer names
-model_urls = {
-    "refine_net": "https://photoocr.s3-eu-west-1.amazonaws.com/craft_refiner_CTW1500.pth",
-}
+# changed from original file: fix import location
+from photo_ocr.detection.craft.modules.original.vgg16_bn import init_weights
 
 
-# This class is a copy from refinenet.py in the original repository, no changes.
 class RefineNet(nn.Module):
     def __init__(self):
         super(RefineNet, self).__init__()
@@ -77,16 +65,3 @@ class RefineNet(nn.Module):
         #out = torch.add([aspp1, aspp2, aspp3, aspp4], dim=1)
         out = aspp1 + aspp2 + aspp3 + aspp4
         return out.permute(0, 2, 3, 1)  # , refine.permute(0,2,3,1)
-
-
-# new code to match other models in torchvision model zoo
-def refine_net(pretrained, progress, **kwargs):
-    model = RefineNet(**kwargs)
-
-    if pretrained:
-        state_dict = load_state_dict_from_url(model_urls['refine_net'], progress=progress)
-        model.load_state_dict(state_dict)
-
-    return model
-
-

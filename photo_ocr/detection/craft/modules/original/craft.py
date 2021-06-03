@@ -1,33 +1,21 @@
 """
 Copyright (c) 2019-present NAVER Corp.
+MIT License
 """
 
+# -*- coding: utf-8 -*-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models.utils import load_state_dict_from_url
-
-from photo_ocr.detection.craft.models.basenet import VGG16BN
-from photo_ocr.detection.craft.models.utils import init_weights
-
-# 1. These weights use different layer names than the original ones. Why?
-# The original repository contains links to weights in a google drive.
-# It seems like the original weights were saved with different layer names than the final code, so loading
-# the weights into a model, it was first necessary to rename some layers.
-# To avoid all this extra code, stored the weights with the correct names.
-# 2. How the weights were stored
-# _use_new_zipfile_serialization=True because load_state_dict_from_url broken with new zipfile format
-# 3. TL;DR:
-# -> these weights are exactly the same as the original ones, just use the correct layer names
-model_urls = {
-    "craft": "https://photoocr.s3-eu-west-1.amazonaws.com/craft_mlt_25k.pth",
-}
 
 
-# This class is a copy from craft.py in the original repository (renamed from snake_case to CamelCase).
-class DoubleConv(nn.Module):
+# changed from original file: fix import location
+from photo_ocr.detection.craft.modules.original.vgg16_bn import vgg16_bn, init_weights
+
+
+class double_conv(nn.Module):
     def __init__(self, in_ch, mid_ch, out_ch):
-        super(DoubleConv, self).__init__()
+        super(double_conv, self).__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(in_ch + mid_ch, mid_ch, kernel_size=1),
             nn.BatchNorm2d(mid_ch),
@@ -42,19 +30,18 @@ class DoubleConv(nn.Module):
         return x
 
 
-# This class is a copy from craft.py in the original repository, no changes.
 class CRAFT(nn.Module):
     def __init__(self, pretrained=False, freeze=False):
         super(CRAFT, self).__init__()
 
         """ Base network """
-        self.basenet = VGG16BN(pretrained, freeze)
+        self.basenet = vgg16_bn(pretrained, freeze)
 
         """ U network """
-        self.upconv1 = DoubleConv(1024, 512, 256)
-        self.upconv2 = DoubleConv(512, 256, 128)
-        self.upconv3 = DoubleConv(256, 128, 64)
-        self.upconv4 = DoubleConv(128, 64, 32)
+        self.upconv1 = double_conv(1024, 512, 256)
+        self.upconv2 = double_conv(512, 256, 128)
+        self.upconv3 = double_conv(256, 128, 64)
+        self.upconv4 = double_conv(128, 64, 32)
 
         num_class = 2
         self.conv_cls = nn.Sequential(
@@ -96,12 +83,7 @@ class CRAFT(nn.Module):
         return y.permute(0, 2, 3, 1), feature
 
 
-# new code to match other models in torchvision model zoo
-def craft(pretrained, progress, **kwargs):
-    model = CRAFT(**kwargs)
-
-    if pretrained:
-        state_dict = load_state_dict_from_url(model_urls['craft'], progress=progress)
-        model.load_state_dict(state_dict)
-
-    return model
+if __name__ == '__main__':
+    model = CRAFT(pretrained=True).cuda()
+    output, _ = model(torch.randn(1, 3, 768, 768).cuda())
+    print(output.shape)

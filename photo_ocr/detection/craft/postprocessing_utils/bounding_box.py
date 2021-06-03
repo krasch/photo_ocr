@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 import math
 
-from photo_ocr.detection.craft.postprocessing.segmentation import Component
+from photo_ocr.detection.craft.postprocessing_utils.segmentation import Component
 
 
 def _dilate_characters(segmentation: np.array, component: Component) -> np.array:

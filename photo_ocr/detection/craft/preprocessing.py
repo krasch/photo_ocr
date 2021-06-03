@@ -1,8 +1,41 @@
+import cv2
+import numpy as np
 from PIL import Image
 
 from torchvision import transforms
+from torchvision.transforms import functional as F
 
-from photo_ocr.utils import transforms as custom_transforms
+
+class ResizeRatio:
+    def __init__(self, ratio):
+        self.ratio = ratio
+
+    def __call__(self, img: Image.Image):
+        # todo use PIL
+        #target_size = int(img.height * self.ratio), int(img.width * self.ratio)
+        #return F.resize(img, target_size, interpolation=Image.BILINEAR)
+
+        target_h, target_w = int(img.height * self.ratio), int(img.width * self.ratio)
+        resized = cv2.resize(np.array(img), (target_w, target_h), interpolation=cv2.INTER_LINEAR)
+        return Image.fromarray(resized)
+
+
+class PadTo32:
+    def __init__(self, fill=0, padding_mode="constant"):
+        self.fill = fill
+        self.padding_mode = padding_mode
+
+    def __call__(self, img: Image.Image):
+
+        pad_right = 32 - img.width % 32
+        if pad_right == 32:
+            pad_right = 0
+
+        pad_bottom = 32 - img.height % 32
+        if pad_bottom == 32:
+            pad_bottom = 0
+
+        return F.pad(img, (0, 0, pad_right, pad_bottom), self.fill, self.padding_mode)
 
 
 def calculate_resize_ratio(img: Image.Image, max_size, mag_ratio):
@@ -18,15 +51,8 @@ def calculate_resize_ratio(img: Image.Image, max_size, mag_ratio):
     return ratio
 
 
-
-def prepare_image(image, target_size, interpolation, mag_ratio=1):
-    ratio = calculate_resize_ratio(image, target_size, mag_ratio)
-
-    transform = transforms.Compose([custom_transforms.ResizeRatio(ratio),
-                                    custom_transforms.PadTo32(),
-                                    transforms.ToTensor(),
-                                    transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
-    x2 = transform(image)
-    x2 = x2.unsqueeze(0)
-
-    return x2, 1.0 / ratio
+def init_transforms(resize_ratio):
+    return transforms.Compose([ResizeRatio(resize_ratio),
+                               PadTo32(),
+                               transforms.ToTensor(),
+                               transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
