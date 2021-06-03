@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, NamedTuple
 
 import numpy as np
 from PIL import Image
@@ -8,14 +8,16 @@ from photo_ocr.detection.craft.preprocessing import calculate_resize_ratio, init
 from photo_ocr.detection.craft.postprocessing import init_postprocessing
 
 
-class Detection:
-    """
-    Convenience class for text detection.
-    Combines the image preprocessing, model and result postprocessing steps.
-    Currently only supports the CRAFT text detection method.
-    """
+DetectionResult = NamedTuple("DetectionResult", [("bounding_box", np.array), ("bounding_polygon", np.array)])
 
+
+class Detection:
     def __init__(self):
+        """
+        Convenience class for text detection.
+        Combines the image preprocessing, model and result postprocessing steps.
+        Currently only supports the CRAFT text detection method.
+        """
         self.model = craft(pretrained=True, progress=True)
         self.model.eval()
 
@@ -24,10 +26,10 @@ class Detection:
                  # all default parameter values taken from original code
                  image_max_size: int = 1280,
                  image_magnification: int = 1.5,
-                 combine_words_to_lines: bool = True,
+                 combine_words_to_lines: bool = False,
                  text_threshold_first_pass: float = 0.4,
                  text_threshold_second_pass: float = 0.7,
-                 link_threshold: float = 0.4) -> List[List[Tuple[np.array, np.array]]]:
+                 link_threshold: float = 0.4) -> List[List[DetectionResult]]:
         """
         Run text detection on the given images.
 
@@ -117,5 +119,8 @@ class Detection:
 
         # perform the adjustment with the ratio just calculated
         detections = [(box * ratio, polygon * ratio) for box, polygon in detections]
+
+        # wrap the detections into convenient named tuples for easier access
+        detections = [DetectionResult(box, polygon) for box, polygon in detections]
 
         return detections

@@ -1,10 +1,15 @@
-.refactoraid
+.refactoraid*
 refactoraid.py
 tests
 scripts
 result
 data
 test.py
+examples
+docs
+weights
+test_detection.py
+test_recognition.py
 
 .idea
 __pycache__

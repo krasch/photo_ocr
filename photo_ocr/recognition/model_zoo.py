@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from torchvision.models.utils import load_state_dict_from_url
 
-from photo_ocr.cuda import DEVICE
+from photo_ocr.util.cuda import DEVICE
 from photo_ocr.recognition.models.base import TextRecognitionModel
 from photo_ocr.recognition.models.modules.wrappers import transformation, feature_extraction, sequence_modeling, prediction
 
