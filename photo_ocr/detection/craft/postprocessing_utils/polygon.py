@@ -251,7 +251,7 @@ def calculate_polygon(segmentation: np.array, bounding_box: np.array) -> np.arra
 
     # don't calculate polygon for small bounding boxes (why? no explanation in original code)
     if box_width < MIN_BOUNDING_BOX_SIZE or box_height < MIN_BOUNDING_BOX_SIZE:
-        return None
+        raise PolygonCalculationError()
 
     # keep only the part of the segmentation map covered by the bounding box and align horizontally
     # unwarp is a function we'll use later to adjust coordinates according to the original segmentation map
