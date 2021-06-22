@@ -3,10 +3,9 @@ from typing import Union
 
 import cv2
 import numpy as np
-
 from PIL import Image
 
-from photo_ocr.util import bbdraw
+import bbdraw
 
 
 def load_image(path: Union[Path, str]) -> Image.Image:
@@ -45,5 +44,5 @@ def draw_ocr_results(image, results):
     for result in results:
         polygon = [(x, y) for x, y in result.bounding_polygon]
         label = "{} ({})".format(result.word, round(result.confidence, 2))
-        image = bbdraw.polygon(image, polygon, colour="green", label=label)
+        image = bbdraw.polygon(image, polygon, color="green", text=label)
     return image
