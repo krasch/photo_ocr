@@ -23,18 +23,14 @@ text = ocr(image)
 
 ### How does it work?
 
-photo_ocr is a wrapper around two deep learning models kindly open-sourced by Clova.ai. photo_ocr
-processes an image in three stages:
+photo_ocr processes an image in three stages:
 
-
-Stage | Example | Supported models | 
+Text detection | Cropping | Text recognition | 
 --- | --- | --- |
-|__Text detection__| image here| CRAFT text detection model ([paper](https://arxiv.org/pdf/1904.01941.pdf), [original source code](https://github.com/clovaai/CRAFT-pytorch))
-|__Cropping and alignment__| image here| (no model needed)
-|__Text recognition__| image here|
+![](images/hairdresser.jpg) | ![](images/crop0.png) ![](images/crop1.png)  ![](images/crop2.png)| erisox (0.08, fail!), <br/> cheri (0.97),<br/>solstudio (0.94) |
+Finding bounding polygons around words | Crop and align horizontally | "Reading" the text from the cropped images |
 
-
-
+### Which models are supported?
 
 two deep learning models kindly open-sourced by [Clova.ai](https://clova.ai)
 
