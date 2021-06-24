@@ -25,11 +25,10 @@ text = ocr(image)
 
 photo_ocr processes an image in three stages:
 
-Text detection | Cropping | Text recognition | 
---- | --- | --- |
-![](images/hairdresser.jpg) | ![](images/crop0.png) <br/>![](images/crop1.png)  <br/>![](images/crop2.png)| erisox (0.08, fail!), <br/> cheri (0.97),<br/>solstudio (0.94) |
-Finding bounding polygons around words | Crop and align horizontally | "Reading" the text from the cropped images |
-
+| <div style="width:200px">1. Text detection </div> | <div style="width:200px">2. Cropping</div> | <div style="width:200px">3. Text recognition </div>| 
+:---: | :---: | :---: |
+![](images/hairdresser.jpg) | ![](images/crop0.png) <br/>![](images/crop1.png)  <br/>![](images/crop2.png)| <br/> erisox (0.08, fail!), <br/> <br/>cheri (0.97),<br/><br/>solstudio (0.94) |
+Finding bound polygons around words | Crop and align horizontally | "Reading" the text from the cropped images |
 ### Which models are supported?
 
 two deep learning models kindly open-sourced by [Clova.ai](https://clova.ai)
