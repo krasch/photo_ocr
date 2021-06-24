@@ -2,6 +2,11 @@
 
 Read text in photos / images with complex backgrounds with this easy-to-use Python library.
 
+1. [Introduction](#section-introduction)
+1. [Installation](#section-installation)
+2. [Usage](#section-usage)
+3. [Troubleshooting](#section-troubleshooting)
+
 ![Image showing recognized text](images/pub.jpg "Image showing recognized text")
 
 ```python
@@ -21,6 +26,7 @@ image = draw_ocr_results(image, text)
 image.save("images/pub_annotated.jpg")
 ```
 
+## <a id="section-introduction">Introduction</a>
 
 
 ### How is this different to tesseract / other OCR tools?
@@ -67,7 +73,7 @@ work well also for other languages that use a __latin alphabet__ (see xx for kno
 Other alphabets are currently not supported by photo_ocr.
 
 
-## Installation
+## <a id="section-installation">Installation</a>
 
 photo_ocr works with Python>=3.6, todo pytorch/torchvision version.
 
@@ -79,7 +85,7 @@ All __models are automatically downloaded__ the first time they are needed. The
 models are stored locally in the standard pytorch model directory, which
 you can change by setting the `TORCH_HOME` environment variable (see the [official pytorch documentation](https://pytorch.org/docs/stable/hub.html) for details).
 
-## Usage
+## <a id="section-usage">Usage</a>
 
 (You can find a script containing all the snippets below at [example.py](example.py))
 
@@ -212,5 +218,5 @@ for image, results_for_image in zip(images, all_results):
     image.save("some_filename.jpg")
 ```
 
-## Troubleshooting
+## <a id="section-troubleshooting">Troubleshooting</a>
  
