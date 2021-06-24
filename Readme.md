@@ -4,15 +4,10 @@ Read text in photos / images with complex backgrounds with this easy-to-use Pyth
 
 ```python
 from PIL import Image
-from photo_ocr import ocr, draw_ocr_results
+from photo_ocr import ocr
 
 image = Image.open("images/pond.jpg")
-
-# run the ocr
 text = ocr(image)
-
-# draw bounding boxes and text on the image
-image = draw_ocr_results(image, text)
 ```
 
 ![Image showing recognized text](images/pond.jpg "Image showing recognized text")
