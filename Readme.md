@@ -2,11 +2,6 @@
 
 Read text in photos / images with complex backgrounds with this easy-to-use Python library.
 
-1. [Introduction](#section-introduction)
-1. [Installation](#section-installation)
-2. [Usage](#section-usage)
-3. [Troubleshooting](#section-troubleshooting)
-
 ![Image showing recognized text](images/pub.jpg "Image showing recognized text")
 
 ```python
@@ -25,6 +20,13 @@ image = draw_ocr_results(image, text)
 # done!
 image.save("images/pub_annotated.jpg")
 ```
+
+## Table of contents
+
+1. [Introduction](#section-introduction)
+2. [Installation](#section-installation)
+3. [Usage](#section-usage)
+4. [Troubleshooting](#section-troubleshooting)
 
 ## <a id="section-introduction">Introduction</a>
 
