@@ -2,21 +2,23 @@
 
 Read text in photos / images with complex backgrounds with this easy-to-use Python library.
 
-![Image showing recognized text](images/pond.jpg "Image showing recognized text")
+![Image showing recognized text](images/pub.jpg "Image showing recognized text")
 
 ```python
 from PIL import Image
 from photo_ocr import ocr, draw_ocr_results
 
-image = Image.open("images/pond.jpg")
+image = Image.open("images/pub.jpg")
 
 # run the ocr
 text = ocr(image)
+print(text)
 
 # draw bounding boxes and text on the image
 image = draw_ocr_results(image, text)
 
-image.save("images/pond_annotated.jpg")
+# done!
+image.save("images/pub_annotated.jpg")
 ```
 
 
@@ -25,8 +27,8 @@ image.save("images/pond_annotated.jpg")
 
 |Classic OCR (e.g. tesseract)| Scene text recognition (e.g. photo_ocr) |
 --- | --- |
-|![Photo of a book page](docs/page.jpg "Photo of a book page")  [Photo by Craig Howell](https://www.flickr.com/photos/seat850/6845895200/)|![Photo of a board with many stickers and graffiti](images/stickers.jpg "Photo of a board with many stickers and graffiti")|
-|Black text on white background, standard font, layout matters| Large variation in fonts, font sizes, colours, angles. Mostly individual words, no consistent layout.|
+|![Photo of a book page](images/book.jpg "Photo of a book page")|![Photo of a board with many stickers and graffiti](images/stickers.jpg "Photo of a board with many stickers and graffiti")|
+|Black text on white background, standard font, layout matters (lines / paragraphs / columns). | Large variation in fonts, font sizes, colours, angles. Mostly individual words, no consistent layout.|
 
 ### How does it work?
 
