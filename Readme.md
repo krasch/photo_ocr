@@ -47,13 +47,6 @@ photo_ocr processes an image in three stages:
 ![](images/hairdresser.jpg) | ![](images/crop0.png) <br/>![](images/crop1.png)  <br/>![](images/crop2.png)| <br/> erisox (0.08, fail!), <br/> <br/>cheri (0.97),<br/><br/>solstudio (0.94) |
 Find bounding polygons around words | Crop and align horizontally | "Reading" the text from the cropped images |
 
-
-### Which languages are supported?
-
-The underlying deep learning models have been trained on __English__ words, but
-work well also for other languages that use a __latin alphabet__ (see xx for known issues). 
-Other alphabets are currently not supported.
-
 ### Which models are supported?
 
 photo_ocr is a wrapper around deep learning models kindly open-sourced by [Clova.ai](https://clova.ai).
@@ -67,29 +60,157 @@ This collection of models has been released under Apache license (see file
 [LICENSE_recognition](LICENSE_recognition)). 
 
 
+### Which languages are supported?
+
+The models have been trained on __English__ words, but
+work well also for other languages that use a __latin alphabet__ (see xx for known issues). 
+Other alphabets are currently not supported by photo_ocr.
+
+
 ## Installation
 
-
+photo_ocr works with Python>=3.6, todo pytorch/torchvision version.
 
 ```
 pip install photo_ocr
 ```
 
-
-#### Getting the models
-
-All models are automatically downloaded the first time they are needed. You
-don't need to do anything.
-
-todo manual download
+All __models are automatically downloaded__ the first time they are needed. The
+models are stored locally in the standard pytorch model directory, which
+you can change by setting the `TORCH_HOME` environment variable (see the [official pytorch documentation](https://pytorch.org/docs/stable/hub.html) for details).
 
 ## Usage
 
-# How to?
+(You can find a script containing all the snippets below at [example.py](example.py))
 
+### Input
+
+The library takes as input a [pillow / PIL](https://pillow.readthedocs.io/en/stable/) image.
+
+You can use PIL directly to read the image from file.
+
+```python
+from PIL import Image
+image = Image.open("images/pub.jpg")
 ```
-git clone https://github.com/krasch/photo_ocr.git
-pipenv install
-pipenv shell
-python example.py
+For convenience, photo_ocr also offers a `load_image` function, which
+opens the image and rotates it according to the EXIF metadata, if necessary.
+
+```python
+from photo_ocr import load_image
+image = load_image("images/pub.jpg")
 ```
+### Running the OCR
+
+Just one simple function call to the `ocr` function:
+
+```python
+from photo_ocr import ocr
+
+results = ocr(image)
+```
+
+The `ocr` function returns a list of all text instances found
+in the image. The list is sorted by recognition confidence, 
+starting with the most confident recognition. 
+
+You can loop over the results like this:
+
+```python
+for result in results:
+    # polygon around the text
+    # (list of xy coordinates: [(x0, y0), (x1, y1),  ....])
+    print(result.polygon)
+    
+    # the actual text (a string)
+    print(result.word)
+    
+    # the recognition confidence (a number in [0.0, 1.0])
+    print(result.confidence)
+```
+
+Since each entry in the results list is a`namedtuple`, you can
+also loop over the results like this: 
+
+```python
+for polygon, word, confidence in results:
+    print(polygon)
+    print(word)
+    print(confidence)
+```
+
+### Visualising the results
+
+Use the `draw_ocr_results` method to draw the
+recognition results onto the original image. 
+
+```python
+from photo_ocr import draw_ocr_results
+
+image = draw_ocr_results(image, results)
+image.save("images/pub_annotated.jpg")
+```
+
+### Running only text detection
+
+Use the `detection` function to only run the text detection step:
+
+```python
+from photo_ocr import detection
+
+# list of polygons where text was found
+polygons = detection(image)
+
+for polygon in polygons:
+    # polygon around the text
+    # (list of xy coordinates: [(x0, y0), (x1, y1),  ....])
+    print(polygon)
+```
+
+You can also use `draw_ocr_results` function to draw the
+results of the `detection`:
+
+```python
+from photo_ocr import draw_ocr_results
+
+image = draw_ocr_results(image, polygons)
+image.save("images/pub_detections.jpg")
+```
+
+### Running only text recognition
+
+Use the `recognition` function to only run the text recognition step.
+You need to supply an image that has already been cropped to a
+text polygon. The text should be aligned horizontally. 
+
+```python
+from photo_ocr import load_image, recognition
+
+crop = load_image("images/crop0.png")
+
+text, confidence = recognition(crop)
+```
+
+### Running multiple images
+
+You can also run the `ocr`, `recognition`, `detection` functions on
+a list of images instead of a single image:
+
+
+```python
+from photo_ocr import load_image, ocr, draw_ocr_results
+
+
+images = [load_image("images/pub.jpg"), 
+          load_image("images/stickers.jpg"),
+          load_image("images/hairdresser.jpg")]
+
+all_results = ocr(images)
+
+for image, results_for_image in zip(images, all_results):
+    image = draw_ocr_results(image, results_for_image)
+    image.save("some_filename.jpg")
+```
+
+## Troubleshooting
+ 
