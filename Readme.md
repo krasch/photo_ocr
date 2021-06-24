@@ -2,16 +2,22 @@
 
 Read text in photos / images with complex backgrounds with this easy-to-use Python library.
 
-```python
-from PIL import Image
-from photo_ocr import ocr
-
-image = Image.open("images/pond.jpg")
-text = ocr(image)
-```
-
 ![Image showing recognized text](images/pond.jpg "Image showing recognized text")
 
+```python
+from PIL import Image
+from photo_ocr import ocr, draw_ocr_results
+
+image = Image.open("images/pond.jpg")
+
+# run the ocr
+text = ocr(image)
+
+# draw bounding boxes and text on the image
+image = draw_ocr_results(image, text)
+
+image.save("images/pond_annotated.jpg")
+```
 
 
 
