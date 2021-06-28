@@ -11,11 +11,11 @@ from photo_ocr import ocr, draw_ocr_results
 image = Image.open("images/pub.jpg")
 
 # run the ocr
-text = ocr(image)
-print(text)
+results = ocr(image)
+print(results)
 
 # draw bounding polygons and text on the image
-image = draw_ocr_results(image, text)
+image = draw_ocr_results(image, results)
 
 # done!
 image.save("images/pub_annotated.jpg")
@@ -28,7 +28,7 @@ image.save("images/pub_annotated.jpg")
 3. [Usage](#section-usage)
 4. [Troubleshooting](#section-troubleshooting)
 
-## <a id="section-introduction">Introduction</a>
+## <a id="section-introduction">1. Introduction</a>
 
 
 ### How is this different to tesseract / other OCR tools?
@@ -75,7 +75,7 @@ work well also for other languages that use a __latin alphabet__ (see xx for kno
 Other alphabets are currently not supported by photo_ocr.
 
 
-## <a id="section-installation">Installation</a>
+## <a id="section-installation">2. Installation</a>
 
 photo_ocr works with Python>=3.6, todo pytorch/torchvision version.
 
@@ -220,5 +220,18 @@ for image, results_for_image in zip(images, all_results):
     image.save("some_filename.jpg")
 ```
 
+## <a id="section-parameters">Detailed configuration / parameters </a>
+
+
+
 ## <a id="section-troubleshooting">Troubleshooting</a>
- 
+
+
+| Example image | <div style="width:150px">Problem description</p> |  How to fix| 
+:---: | :---: | :--- |
+![](images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. <br/><br/>Consider using a spellchecker after running text recognition to get the correct letters. |
+![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. <br/> <br/> Consider switching to the case-sensitive model, which also supports 30 common special characters. (see ....)
+![](images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. <br/> <br/>  Consider rotating the input image by 90°. |
+![](images/borders.jpg)  | Text area is not found. | Try decreasing the confidence_threshold. If this does not help, decrease the text_threshold_first_pass and text_threshold_second_pass. |
+![](images/cow.jpg)  | Text area is found but there is no text. | Try increasing the confidence_threshold. If this does not help, increase the text_threshold_first_pass and text_threshold_second_pass.  |
+
