@@ -226,17 +226,17 @@ for image, results_for_image in zip(images, all_results):
 | Example | Description |  Reason | Solution | 
 :---: | :--- | :--- | :--- |
 ![](images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
-![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param_model">case-sensitive model</a>, which also supports 30 common special characters. (see ....)
+![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param-model">case-sensitive model</a>, which also supports 30 common special characters. (see ....)
 ![](images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. | Rotate the input image by 90°. |
-![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#param_confidence_threshold">confidence threshold</a>. Alternatively, decrease the <a href="#param_text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param_text_threshold_second_pass">text_threshold_second_pass</a>. |
-![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#confidence_threshold">confidence threshold</a>. Alternatively, increase the <a href="#param_text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param_text_threshold_second_pass">text_threshold_second_pass</a>.  |
+![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, decrease the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>. |
+![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, increase the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>.  |
 
 
 
 ## <a name="section-parameters">Detailed configuration / parameters </a>
 
 
-### Runtime params
+### Runtime parameters
 
 | Name | Description |  Values | 
 :--- | :--- | :--- 
@@ -249,10 +249,10 @@ results = ocr(image, confidence_threshold=0.3)
 ```
 
 
-### Init params
+### Initialisation parameters
 
 For convenience, the `ocr`, `detection`, `recognition` methods
-have been pre-initialised with sensible defaults. If you want to change any of these parameters, you 
+are pre-initialised with sensible defaults. If you want to change any of these parameters, you 
 need to initialise these methods again with your own settings (see [initialisation code](#section-initialisation-code)).
 
 ##### Detection params
