@@ -220,23 +220,6 @@ for image, results_for_image in zip(images, all_results):
     image.save("some_filename.jpg")
 ```
 
-## <a id="section-parameters">Detailed configuration / parameters </a>
-
-### Init params
-
-These parameters configure the model initialisation, e.g. which models
-to use. photo_ocr provides a set of default 
-
-
-### Runtime params
-
-The following parameters steer model todo
-
-| Name | Description |  Usage | 
-:--- | :--- | :--- 
-<a id="confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned.| <pre>ocr(image, confidence_threshold=0.4)</pre>
-
-
 ## <a id="section-troubleshooting">Troubleshooting</a>
 
 
@@ -245,6 +228,69 @@ The following parameters steer model todo
 ![](images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
 ![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the case-sensitive model, which also supports 30 common special characters. (see ....)
 ![](images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. | Rotate the input image by 90°. |
-![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the confidence_threshold. Alternatively, decrease the text_threshold_first_pass and text_threshold_second_pass. |
-![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the confidence_threshold. Alternatively, increase the text_threshold_first_pass and text_threshold_second_pass.  |
+![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#confidence_threshold">confidence threshold</a>. Alternatively, decrease the text_threshold_first_pass and text_threshold_second_pass. |
+![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#confidence_threshold">confidence threshold</a>. Alternatively, increase the text_threshold_first_pass and text_threshold_second_pass.  |
 
+
+
+## <a id="section-parameters">Detailed configuration / parameters </a>
+
+
+### Init params
+
+For convenience, the `ocr`, `detection`, `recognition` methods
+have been pre-initialised with sensible defaults. If you want to change any of these parameters, you 
+need to initialise these methods again with your own settings (see code snipped below the table).
+
+
+| Name | Description | Values |
+:--- | :--- | :--- 
+image_max_size | During image pre-processing before running text detection, the image will be resized such that the larger side of the image is smaller than image_max_size. | an integer, default=1280
+image_magnification | During image pre-processing before running text detection, the image will be magnified by this value (but no bigger than image_max_size) | a float &ge; 1.0, default=1.5
+combine_words_to_lines | If true, use the additional "RefineNet" to link individual words that are near each other horizontally together.| a boolean, default=False|
+text_threshold_first_pass | The CRAFT model produces for every pixel a score of howlikely it is that this pixel is part of a text character (called regions score in the paper). During postprocessing, only those pixels are considered, that are above the text_threshold_first_pass. | a float in [0.0, 1.0], default=0.4 | 
+text_threshold_second_pass | See explanation of text_threshold_first_pass. During postprocessing, there is a second round of thresholding happening after the individual characters have been linked together to words (see link_threshold); detection_text_threshold_second_pass <= detection_text_threshold_first_pass| a float in [0.0, 1.0], default=0.7|
+link_threshold | The CRAFT model produces for every pixels a score of how likely it is that this pixel is between two text characters (called affinity score in the paper). During postprocessing, this score is used to link individual characters together as words.| a float in [0.0, 1.0], default=0.4|
+model | Which recognition model to use, see the [paper](https://arxiv.org/pdf/1904.01906.pdf), in particular Figure 4. <br/><br/> Best performance: TPS_ResNet_BiLSTM_Attn <br/><br/>slightly worse performance but five times faster: model_zoo.None_ResNet_None_CTC <br/><br/>case-sensitive: model_zoo.TPS_ResNet_BiLSTM_Attn_case_sensitive| One of the initialisation functions in the photo_ocr.recognition.model_zoo, default=model_zoo.TPS_ResNet_BiLSTM_Attn |
+image_width | During image pre-processing, the (cropped) image will be resized to this width models were trained with width=100, other values don't seem to work as well | an integer, default=100|
+image_height | During image pre-processing, the (cropped) image will be resized to this height;  models were trained with height=32, other values don't seem to work as well | an integer, default=32|
+keep_ratio | When resizing images during pre-processing: True -> keep the width/height ratio (and pad appropriately) or False -> simple resize without keeping ratio| a boolean, default=False| 
+
+```python
+
+from photo_ocr import PhotoOCR
+from photo_ocr.recognition import model_zoo 
+
+
+detection_params = {"image_max_size": 1280,
+                    "image_magnification": 1.5,
+                    "combine_words_to_lines": False,
+                    "text_threshold_first_pass": 0.4,
+                    "text_threshold_second_pass": 0.7,
+                    "link_threshold": 0.4}
+
+recognition_params = {"model": model_zoo.TPS_ResNet_BiLSTM_Attn,
+                      "image_width": 100,
+                      "image_height": 32,
+                      "keep_ratio": False}
+
+# initialise the photo_ocr object
+photo_ocr = PhotoOCR(detection_params, recognition_params)
+
+# optionally: make class methods available as global functions for convenience
+ocr = photo_ocr.ocr
+detection = photo_ocr.detection
+recognition = photo_ocr.recognition
+```
+
+### Runtime params
+
+| Name | Description |  Usage | 
+:--- | :--- | :--- 
+<a id="confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned. | [0.0, 1.0)
+
+
+```python
+
+results = ocr(image, confidence_threshold=0.3)
+```
