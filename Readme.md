@@ -226,7 +226,7 @@ for image, results_for_image in zip(images, all_results):
 | Example | Description |  Reason | Solution | 
 :---: | :--- | :--- | :--- |
 ![](images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
-![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param-model">case-sensitive model</a>, which also supports 30 common special characters. (see ....)
+![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param-model">case-sensitive model</a>, which also supports 30 common special characters. 
 ![](images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. | Rotate the input image by 90°. |
 ![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, decrease the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>. |
 ![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, increase the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>.  |
@@ -240,7 +240,7 @@ for image, results_for_image in zip(images, all_results):
 
 | Name | Description |  Values | 
 :--- | :--- | :--- 
-<a name="param_confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned. | a float in [0.0, 1.0), default=0.3
+<a name="param-confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned. | a float in [0.0, 1.0), default=0.3
 
 
 ```python
