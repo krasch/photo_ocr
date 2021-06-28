@@ -28,7 +28,7 @@ image.save("images/pub_annotated.jpg")
 3. [Usage](#section-usage)
 4. [Troubleshooting](#section-troubleshooting)
 
-## <a id="section-introduction">1. Introduction</a>
+## <a name="section-introduction">1. Introduction</a>
 
 
 ### How is this different to tesseract / other OCR tools?
@@ -75,7 +75,7 @@ work well also for other languages that use a __latin alphabet__ (see xx for kno
 Other alphabets are currently not supported by photo_ocr.
 
 
-## <a id="section-installation">2. Installation</a>
+## <a name="section-installation">2. Installation</a>
 
 photo_ocr works with Python>=3.6, todo pytorch/torchvision version.
 
@@ -87,7 +87,7 @@ All __models are automatically downloaded__ the first time they are needed. The
 models are stored locally in the standard pytorch model directory, which
 you can change by setting the `TORCH_HOME` environment variable (see the [official pytorch documentation](https://pytorch.org/docs/stable/hub.html) for details).
 
-## <a id="section-usage">Usage</a>
+## <a name="section-usage">Usage</a>
 
 (You can find a script containing all the snippets below at [example.py](example.py))
 
@@ -220,27 +220,27 @@ for image, results_for_image in zip(images, all_results):
     image.save("some_filename.jpg")
 ```
 
-## <a id="section-troubleshooting">Troubleshooting</a>
+## <a name="section-troubleshooting">Troubleshooting</a>
 
 
 | Example | Description |  Reason | Solution | 
 :---: | :--- | :--- | :--- |
 ![](images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
-![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the case-sensitive model, which also supports 30 common special characters. (see ....)
+![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param_model">case-sensitive model</a>, which also supports 30 common special characters. (see ....)
 ![](images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. | Rotate the input image by 90°. |
-![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#confidence_threshold">confidence threshold</a>. Alternatively, decrease the text_threshold_first_pass and text_threshold_second_pass. |
-![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#confidence_threshold">confidence threshold</a>. Alternatively, increase the text_threshold_first_pass and text_threshold_second_pass.  |
+![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#param_confidence_threshold">confidence threshold</a>. Alternatively, decrease the <a href="#param_text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param_text_threshold_second_pass">text_threshold_second_pass</a>. |
+![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#confidence_threshold">confidence threshold</a>. Alternatively, increase the <a href="#param_text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param_text_threshold_second_pass">text_threshold_second_pass</a>.  |
 
 
 
-## <a id="section-parameters">Detailed configuration / parameters </a>
+## <a name="section-parameters">Detailed configuration / parameters </a>
 
 
 ### Runtime params
 
-| Name | Description |  Usage | 
+| Name | Description |  Values | 
 :--- | :--- | :--- 
-<a id="confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned. | [0.0, 1.0)
+<a name="param_confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned. | a float in [0.0, 1.0), default=0.3
 
 
 ```python
@@ -253,31 +253,31 @@ results = ocr(image, confidence_threshold=0.3)
 
 For convenience, the `ocr`, `detection`, `recognition` methods
 have been pre-initialised with sensible defaults. If you want to change any of these parameters, you 
-need to initialise these methods again with your own settings (see code snipped below the table).
+need to initialise these methods again with your own settings (see [initialisation code](#section-initialisation-code)).
 
 ##### Detection params
 
 | Name | Description | Values |
 :--- | :--- | :--- 
-image_max_size | During image pre-processing before running text detection, the image will be resized such that the larger side of the image is smaller than image_max_size. | an integer, default=1280
-image_magnification | During image pre-processing before running text detection, the image will be magnified by this value (but no bigger than image_max_size) | a float &ge; 1.0, default=1.5
-combine_words_to_lines | If true, use the additional "RefineNet" to link individual words that are near each other horizontally together.| a boolean, default=False|
-text_threshold_first_pass | The CRAFT model produces for every pixel a score of howlikely it is that this pixel is part of a text character (called regions score in the paper). During postprocessing, only those pixels are considered, that are above the text_threshold_first_pass. | a float in [0.0, 1.0], default=0.4 | 
-text_threshold_second_pass | See explanation of text_threshold_first_pass. During postprocessing, there is a second round of thresholding happening after the individual characters have been linked together to words (see link_threshold); detection_text_threshold_second_pass <= detection_text_threshold_first_pass| a float in [0.0, 1.0], default=0.7|
-link_threshold | The CRAFT model produces for every pixels a score of how likely it is that this pixel is between two text characters (called affinity score in the paper). During postprocessing, this score is used to link individual characters together as words.| a float in [0.0, 1.0], default=0.4|
+<a name="param-image_max_size">image_max_size</a> | During image pre-processing before running text detection, the image will be resized such that the larger side of the image is smaller than image_max_size. | an integer, default=1280
+<a name="param-image_magnification">image_magnification</a> | During image pre-processing before running text detection, the image will be magnified by this value (but no bigger than image_max_size) | a float &ge; 1.0, default=1.5
+<a name="param-combine_words_to_lines">combine_words_to_lines</a> | If true, use the additional "RefineNet" to link individual words that are near each other horizontally together.| a boolean, default=False|
+<a name="param-text_threshold_first_pass">text_threshold_first_pass</a> | The CRAFT model produces for every pixel a score of howlikely it is that this pixel is part of a text character (called regions score in the paper). During postprocessing, only those pixels are considered, that are above the text_threshold_first_pass. | a float in [0.0, 1.0], default=0.4 | 
+<a name="param-text_threshold_second_pass">text_threshold_second_pass</a> | See explanation of text_threshold_first_pass. During postprocessing, there is a second round of thresholding happening after the individual characters have been linked together to words (see link_threshold); detection_text_threshold_second_pass <= detection_text_threshold_first_pass| a float in [0.0, 1.0], default=0.7|
+<a name="param-link_threshold">link_threshold</a> | The CRAFT model produces for every pixels a score of how likely it is that this pixel is between two text characters (called affinity score in the paper). During postprocessing, this score is used to link individual characters together as words.| a float in [0.0, 1.0], default=0.4|
 
 ##### Recognition params
 
 | Name | Description | Values |
 :--- | :--- | :--- 
-model | Which recognition model to use, see the [paper](https://arxiv.org/pdf/1904.01906.pdf), in particular Figure 4. <br/><br/> Best performance: TPS_ResNet_BiLSTM_Attn <br/><br/>slightly worse performance but five times faster: model_zoo.None_ResNet_None_CTC <br/><br/>case-sensitive: model_zoo.TPS_ResNet_BiLSTM_Attn_case_sensitive| One of the initialisation functions in the photo_ocr.recognition.model_zoo, default=model_zoo.TPS_ResNet_BiLSTM_Attn |
-image_width | During image pre-processing, the (cropped) image will be resized to this width models were trained with width=100, other values don't seem to work as well | an integer, default=100|
-image_height | During image pre-processing, the (cropped) image will be resized to this height;  models were trained with height=32, other values don't seem to work as well | an integer, default=32|
-keep_ratio | When resizing images during pre-processing: True -> keep the width/height ratio (and pad appropriately) or False -> simple resize without keeping ratio| a boolean, default=False| 
+<a name="param-model">model</a> | Which recognition model to use, see the [paper](https://arxiv.org/pdf/1904.01906.pdf), in particular Figure 4. <br/><br/> Best performance: TPS_ResNet_BiLSTM_Attn <br/><br/>slightly worse performance but five times faster: model_zoo.None_ResNet_None_CTC <br/><br/>case-sensitive: model_zoo.TPS_ResNet_BiLSTM_Attn_case_sensitive| One of the initialisation functions in the photo_ocr.recognition.model_zoo, default=model_zoo.TPS_ResNet_BiLSTM_Attn |
+<a name="param-image_width">image_width</a> | During image pre-processing, the (cropped) image will be resized to this width models were trained with width=100, other values don't seem to work as well | an integer, default=100|
+<a name="param-image_height">image_height</a> | During image pre-processing, the (cropped) image will be resized to this height;  models were trained with height=32, other values don't seem to work as well | an integer, default=32|
+<a name="param-keep_ratio">keep_ratio</a> | When resizing images during pre-processing: True -> keep the width/height ratio (and pad appropriately) or False -> simple resize without keeping ratio| a boolean, default=False| 
 
 
 
-##### Initialisation code
+##### <a name="section-initialisation-code">Initialisation code<a>
 
 ```python
 
