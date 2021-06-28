@@ -236,12 +236,26 @@ for image, results_for_image in zip(images, all_results):
 ## <a id="section-parameters">Detailed configuration / parameters </a>
 
 
+### Runtime params
+
+| Name | Description |  Usage | 
+:--- | :--- | :--- 
+<a id="confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned. | [0.0, 1.0)
+
+
+```python
+
+results = ocr(image, confidence_threshold=0.3)
+```
+
+
 ### Init params
 
 For convenience, the `ocr`, `detection`, `recognition` methods
 have been pre-initialised with sensible defaults. If you want to change any of these parameters, you 
 need to initialise these methods again with your own settings (see code snipped below the table).
 
+##### Detection params
 
 | Name | Description | Values |
 :--- | :--- | :--- 
@@ -251,10 +265,19 @@ combine_words_to_lines | If true, use the additional "RefineNet" to link individ
 text_threshold_first_pass | The CRAFT model produces for every pixel a score of howlikely it is that this pixel is part of a text character (called regions score in the paper). During postprocessing, only those pixels are considered, that are above the text_threshold_first_pass. | a float in [0.0, 1.0], default=0.4 | 
 text_threshold_second_pass | See explanation of text_threshold_first_pass. During postprocessing, there is a second round of thresholding happening after the individual characters have been linked together to words (see link_threshold); detection_text_threshold_second_pass <= detection_text_threshold_first_pass| a float in [0.0, 1.0], default=0.7|
 link_threshold | The CRAFT model produces for every pixels a score of how likely it is that this pixel is between two text characters (called affinity score in the paper). During postprocessing, this score is used to link individual characters together as words.| a float in [0.0, 1.0], default=0.4|
+
+##### Recognition params
+
+| Name | Description | Values |
+:--- | :--- | :--- 
 model | Which recognition model to use, see the [paper](https://arxiv.org/pdf/1904.01906.pdf), in particular Figure 4. <br/><br/> Best performance: TPS_ResNet_BiLSTM_Attn <br/><br/>slightly worse performance but five times faster: model_zoo.None_ResNet_None_CTC <br/><br/>case-sensitive: model_zoo.TPS_ResNet_BiLSTM_Attn_case_sensitive| One of the initialisation functions in the photo_ocr.recognition.model_zoo, default=model_zoo.TPS_ResNet_BiLSTM_Attn |
 image_width | During image pre-processing, the (cropped) image will be resized to this width models were trained with width=100, other values don't seem to work as well | an integer, default=100|
 image_height | During image pre-processing, the (cropped) image will be resized to this height;  models were trained with height=32, other values don't seem to work as well | an integer, default=32|
 keep_ratio | When resizing images during pre-processing: True -> keep the width/height ratio (and pad appropriately) or False -> simple resize without keeping ratio| a boolean, default=False| 
+
+
+
+##### Initialisation code
 
 ```python
 
@@ -281,16 +304,4 @@ photo_ocr = PhotoOCR(detection_params, recognition_params)
 ocr = photo_ocr.ocr
 detection = photo_ocr.detection
 recognition = photo_ocr.recognition
-```
-
-### Runtime params
-
-| Name | Description |  Usage | 
-:--- | :--- | :--- 
-<a id="confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned. | [0.0, 1.0)
-
-
-```python
-
-results = ocr(image, confidence_threshold=0.3)
 ```
