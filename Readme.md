@@ -222,6 +222,19 @@ for image, results_for_image in zip(images, all_results):
 
 ## <a id="section-parameters">Detailed configuration / parameters </a>
 
+### Init params
+
+These parameters configure the model initialisation, e.g. which models
+to use. photo_ocr provides a set of default 
+
+
+### Runtime params
+
+The following parameters steer model todo
+
+| Name | Description |  Usage | 
+:--- | :--- | :--- 
+<a id="confidence_threshold">confidence_threshold</a> | Only recognitions with confidence larger than this threshold will be returned.| <pre>ocr(image, confidence_threshold=0.4)</pre>
 
 
 ## <a id="section-troubleshooting">Troubleshooting</a>
@@ -232,6 +245,6 @@ for image, results_for_image in zip(images, all_results):
 ![](images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
 ![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the case-sensitive model, which also supports 30 common special characters. (see ....)
 ![](images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. | Rotate the input image by 90°. |
-![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the confidence_threshold. If this does not help, decrease the text_threshold_first_pass and text_threshold_second_pass. |
-![](images/cow.jpg)  | Text area is found but there is no text. | - | Try increasing the confidence_threshold. If this does not help, increase the text_threshold_first_pass and text_threshold_second_pass.  |
+![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the confidence_threshold. Alternatively, decrease the text_threshold_first_pass and text_threshold_second_pass. |
+![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the confidence_threshold. Alternatively, increase the text_threshold_first_pass and text_threshold_second_pass.  |
 
