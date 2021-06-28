@@ -27,6 +27,8 @@ image.save("images/pub_annotated.jpg")
 2. [Installation](#section-installation)
 3. [Usage](#section-usage)
 4. [Troubleshooting](#section-troubleshooting)
+5. [Detailed configuration / parameters](#section-parameters)
+
 
 ## <a name="section-introduction">1. Introduction</a>
 
@@ -87,7 +89,7 @@ All __models are automatically downloaded__ the first time they are needed. The
 models are stored locally in the standard pytorch model directory, which
 you can change by setting the `TORCH_HOME` environment variable (see the [official pytorch documentation](https://pytorch.org/docs/stable/hub.html) for details).
 
-## <a name="section-usage">Usage</a>
+## <a name="section-usage">3. Usage</a>
 
 (You can find a script containing all the snippets below at [example.py](example.py))
 
@@ -220,7 +222,7 @@ for image, results_for_image in zip(images, all_results):
     image.save("some_filename.jpg")
 ```
 
-## <a name="section-troubleshooting">Troubleshooting</a>
+## <a name="section-troubleshooting">4. Troubleshooting</a>
 
 
 | Example | Description |  Reason | Solution | 
@@ -233,7 +235,7 @@ for image, results_for_image in zip(images, all_results):
 
 
 
-## <a name="section-parameters">Detailed configuration / parameters </a>
+## <a name="section-parameters">5. Detailed configuration / parameters </a>
 
 
 ### Runtime parameters
