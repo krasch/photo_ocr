@@ -82,6 +82,7 @@ class Detection:
         """
 
         # perform image preprocessing
+        image = image.convert("RGB")  # in case we got a grayscale or transparent image
         resize_ratio = calculate_resize_ratio(image, self.image_max_size, self.image_magnification)
         image = init_transforms(resize_ratio)(image)
 

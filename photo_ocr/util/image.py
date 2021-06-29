@@ -1,21 +1,16 @@
 from pathlib import Path
 from typing import Union
 
+from PIL import Image, ImageOps
 import cv2
 import numpy as np
-from PIL import Image
-
 import bbdraw
 
 
-#image = ImageOps.exif_transpose(image)
-
 def load_image(path: Union[Path, str]) -> Image.Image:
-    return Image.open(path).convert("RGB") # todo move to input todo transpose
-
-
-def save_image(image: Image.Image, path: Union[Path, str]):
-    image.save(path)
+    image = Image.open(path)
+    image = ImageOps.exif_transpose(image)
+    return image
 
 
 def _sort_clockwise(box: np.array) -> np.array:
