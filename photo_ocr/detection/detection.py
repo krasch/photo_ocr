@@ -11,29 +11,21 @@ Polygon = List[Tuple[float, float]]
 
 
 class Detection:
-    def __init__(self):
-        """
-        Convenience class for text detection.
-        Combines the image preprocessing, model and result postprocessing steps.
-        Currently only supports the CRAFT text detection method.
-        """
-        self.model = craft(pretrained=True, progress=True)
-        self.model.eval()
-
-    def __call__(self,
-                 images: List[Image.Image],
+    def __init__(self,
                  # all default parameter values taken from original code
                  image_max_size: int = 1280,
                  image_magnification: int = 1.5,
                  combine_words_to_lines: bool = False,
                  text_threshold_first_pass: float = 0.4,
                  text_threshold_second_pass: float = 0.7,
-                 link_threshold: float = 0.4) -> List[List[Polygon]]:
+                 link_threshold: float = 0.4
+                 ):
         """
-        Run text detection on the given images.
+        Convenience class for text detection.
+        Combines the image preprocessing, model and result postprocessing steps.
+        Currently only supports the CRAFT text detection method.
 
-        :param images: images on which to run the detection
-        :param image_max_size:
+         :param image_max_size:
                     During image pre-processing before running text detection, the image will be resized such that the
                     larger side of the image is smaller than image_max_size.
         :param image_magnification:
@@ -58,57 +50,53 @@ class Detection:
                     this pixel is between two text characters (called affinity score in the paper). During
                     postprocessing, this score is used to link individual characters together as words.
                     Only pixels that are above the link_threshold are considered. Value must be in [0.0, 1.0]
+        """
+        self.model = craft(pretrained=True, progress=True)
+        self.model.eval()
+
+        self.image_max_size = image_max_size
+        self.image_magnification = image_magnification
+        self.combine_words_to_lines = combine_words_to_lines
+        self.postprocess = init_postprocessing(text_threshold_first_pass, text_threshold_second_pass, link_threshold)
+
+    def __call__(self,
+                 images: List[Image.Image],
+                 ) -> List[List[Polygon]]:
+        """
+        Run text detection on the given images.
+
+        :param images: images on which to run the detection
         :return: One detection result per input image. Each detection result is a list of all found text polygons.
         """
 
         # currently no batching implemented, so just run all images one after the other.
         # reason for no batching: worried of overhead since all images would need to be the same size
         # todo consider a parameter batch_mode that user can set if they want to run in batches
-        return [self._detect_one_image(image,
-                                       image_max_size,
-                                       image_magnification,
-                                       combine_words_to_lines,
-                                       text_threshold_first_pass,
-                                       text_threshold_second_pass,
-                                       link_threshold) for image in images]
+        return [self._detect_one_image(image) for image in images]
 
-    def _detect_one_image(self,
-                          image: Image.Image,
-                          image_max_size: int,
-                          image_magnification: int,
-                          combine_words_to_lines: bool,
-                          text_threshold_first_pass: float,
-                          text_threshold_second_pass: float,
-                          link_threshold: float) -> List[Polygon]:
+    def _detect_one_image(self, image: Image.Image) -> List[Polygon]:
         """
         Helper function that runs the text detection on one image.
         :param image:
-        :param image_max_size:
-        :param image_magnification:
-        :param combine_words_to_lines:
-        :param text_threshold_first_pass:
-        :param text_threshold_second_pass:
-        :param link_threshold:
         :return:
         """
 
         # perform image preprocessing
-        resize_ratio = calculate_resize_ratio(image, image_max_size, image_magnification)
+        resize_ratio = calculate_resize_ratio(image, self.image_max_size, self.image_magnification)
         image = init_transforms(resize_ratio)(image)
 
         # forward pass
         # score_text = for each pixel, how likely is it that this pixel is part of a text character
         # link_text = for each pixel, how likely it is that this pixel is between two text characters
         batch = image.unsqueeze(0)
-        score_text, score_link = self.model(batch, refine=combine_words_to_lines)
+        score_text, score_link = self.model(batch, refine=self.combine_words_to_lines)
 
         # only have one image, so just grab the first result
         score_text = score_text[0, :, :].cpu().data.numpy()
         score_link = score_link[0, :, :].cpu().data.numpy()
 
         # for each detected word, calculate first a bounding box and then a tight polygon around the word
-        postprocess = init_postprocessing(text_threshold_first_pass, text_threshold_second_pass, link_threshold)
-        polygons = postprocess(score_text, score_link)
+        polygons = self.postprocess(score_text, score_link)
 
         # detections are based on the resized image -> need to map them back to the original image
         ratio = 1.0 / resize_ratio  # to reverse the initial resizing

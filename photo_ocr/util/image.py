@@ -65,7 +65,6 @@ def draw_ocr_results(image, results):
     results = sorted(results, key=lambda item: item.confidence)
 
     for result in results:
-        polygon = [(x, y) for x, y in result.polygon]
         label = "{} ({:.2f})".format(result.text, result.confidence)
-        image = bbdraw.polygon(image, polygon, color=bbdraw.bbdraw.PURPLE, text=label)
+        image = bbdraw.polygon(image, result.polygon, color=bbdraw.bbdraw.PURPLE, text=label)
     return image
