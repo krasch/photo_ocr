@@ -1,7 +1,3 @@
-import sys
-sys.path.append("/home/kat/Projekte/Tools/bbdraw")
-
-
 from pathlib import Path
 from typing import Union
 
@@ -70,6 +66,6 @@ def draw_ocr_results(image, results):
 
     for result in results:
         polygon = [(x, y) for x, y in result.polygon]
-        label = "{} ({:.2f})".format(result.word, result.confidence)
+        label = "{} ({:.2f})".format(result.text, result.confidence)
         image = bbdraw.polygon(image, polygon, color=bbdraw.bbdraw.PURPLE, text=label)
     return image

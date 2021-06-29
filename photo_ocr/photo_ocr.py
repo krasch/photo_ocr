@@ -14,7 +14,7 @@ class InputType(Enum):
 
 
 OCRResult = NamedTuple("OCRResult", [("polygon", Polygon),
-                                     ("word", str),
+                                     ("text", str),
                                      ("confidence", float)])
 
 
@@ -127,7 +127,7 @@ class PhotoOCR:
         recognitions = [self.recognition(crop) for crop in crops]
 
         # put detection results and recognition results together in a ocr result tuple
-        results = [OCRResult(polygon, rec.word, rec.confidence) for polygon, rec in zip(text_polygons, recognitions)]
+        results = [OCRResult(polygon, rec.text, rec.confidence) for polygon, rec in zip(text_polygons, recognitions)]
 
         # keep only the high-confidence words
         results = [result for result in results if result.confidence >= confidence_threshold]
