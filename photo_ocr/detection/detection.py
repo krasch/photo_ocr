@@ -1,11 +1,13 @@
-from typing import List, NamedTuple
+from typing import List, Tuple
 
-import numpy as np
 from PIL import Image
 
 from photo_ocr.detection.model_zoo import craft
 from photo_ocr.detection.craft.preprocessing import calculate_resize_ratio, init_transforms
 from photo_ocr.detection.craft.postprocessing import init_postprocessing
+
+# polygon in PIL format: list of [(x1, y1), (x2, y2), ...]
+Polygon = List[Tuple[float, float]]
 
 
 class Detection:
@@ -26,7 +28,7 @@ class Detection:
                  combine_words_to_lines: bool = False,
                  text_threshold_first_pass: float = 0.4,
                  text_threshold_second_pass: float = 0.7,
-                 link_threshold: float = 0.4) -> List[List[np.array]]:
+                 link_threshold: float = 0.4) -> List[List[Polygon]]:
         """
         Run text detection on the given images.
 
@@ -77,7 +79,7 @@ class Detection:
                           combine_words_to_lines: bool,
                           text_threshold_first_pass: float,
                           text_threshold_second_pass: float,
-                          link_threshold: float) -> List[np.array]:
+                          link_threshold: float) -> List[Polygon]:
         """
         Helper function that runs the text detection on one image.
         :param image:
@@ -114,5 +116,8 @@ class Detection:
 
         # perform the adjustment with the ratio just calculated
         polygons = [polygon * ratio for polygon in polygons]
+
+        # convert to PIL polygon format (list of (x, y) tuples)
+        polygons = [[(x, y) for x, y in polygon] for polygon in polygons]
 
         return polygons

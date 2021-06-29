@@ -42,7 +42,9 @@ def crop_and_align(image: Image.Image, polygon: np.array):
     :return:
     """
 
-    rect = cv2.minAreaRect(polygon.astype(np.float32))
+    polygon = np.array(polygon).astype(np.float32)
+    rect = cv2.minAreaRect(polygon)
+
     box = cv2.boxPoints(rect)
     box = _sort_clockwise(box)
 

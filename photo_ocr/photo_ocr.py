@@ -1,10 +1,9 @@
 from enum import Enum
 from typing import Union, List, NamedTuple
 
-import numpy as np
 from PIL import Image
 
-from photo_ocr.detection.detection import Detection
+from photo_ocr.detection.detection import Detection, Polygon
 from photo_ocr.recognition.recognition import Recognition, RecognitionResult
 from photo_ocr.util.image import crop_and_align
 
@@ -14,7 +13,7 @@ class InputType(Enum):
     IMAGE_LIST = 2
 
 
-OCRResult = NamedTuple("OCRResult", [("polygon", str),
+OCRResult = NamedTuple("OCRResult", [("polygon", Polygon),
                                      ("word", str),
                                      ("confidence", float)])
 
@@ -37,7 +36,7 @@ class PhotoOCR:
     def detection(self,
                   images: Union[Image.Image, List[Image.Image]],
                   detection_params: dict = None,
-                  ) -> Union[List[np.array], List[List[np.array]]]:
+                  ) -> Union[List[Polygon], List[List[Polygon]]]:
         """
         Run the detection algorithm to find text areas in one image or a list of images.
 
