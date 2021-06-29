@@ -1,10 +1,9 @@
 from enum import Enum
 from typing import Union, List, NamedTuple
 
-import numpy as np
 from PIL import Image
 
-from photo_ocr.detection.detection import Detection, DetectionResult
+from photo_ocr.detection.detection import Detection, Polygon
 from photo_ocr.recognition.recognition import Recognition, RecognitionResult
 from photo_ocr.util.image import crop_and_align
 
@@ -14,22 +13,23 @@ class InputType(Enum):
     IMAGE_LIST = 2
 
 
-OCRResult = NamedTuple("OCRResult", [("bounding_box", np.array),
-                                     ("bounding_polygon", np.array),
-                                     ("word", str),
+OCRResult = NamedTuple("OCRResult", [("polygon", Polygon),
+                                     ("text", str),
                                      ("confidence", float)])
 
 
 class PhotoOCR:
-    def __init__(self, recognition_init_params: dict = None):
+    def __init__(self,
+                 detection_params: dict = None,
+                 recognition_params: dict = None):
         """
-        :param recognition_init_params: Dictionary of parameters for initialising the recognition model.
-                                        See constructor of :class:`photo_ocr.recognition.recognition.Recognition`
-                                        (text detection currently does not take init params, so there is
-                                         no need for detection_init_params)
+        :param detection_params: Dictionary of parameters for initialising the detection model.
+                                 See constructor of :class:`photo_ocr.detection.detection.Detection`
+        :param recognition_params: Dictionary of parameters for initialising the recognition model.
+                                   See constructor of :class:`photo_ocr.recognition.recognition.Recognition`
         """
-
-        self._recognition_init_params = recognition_init_params or {}
+        self._detection_init_params = detection_params or {}
+        self._recognition_init_params = recognition_params or {}
 
         # lazy initialisation - the models will be loaded the first time they are needed
         self._detection_model = None
@@ -37,35 +37,32 @@ class PhotoOCR:
 
     def detection(self,
                   images: Union[Image.Image, List[Image.Image]],
-                  detection_params: dict = None,
-                  ) -> Union[List[DetectionResult], List[List[DetectionResult]]]:
+                  ) -> Union[List[Polygon], List[List[Polygon]]]:
         """
         Run the detection algorithm to find text areas in one image or a list of images.
 
         :param images: One PIL image or a list of PIL images on which to run the detection algorithm.
-        :param detection_params: Dictionary of parameters to pass to the detection model,
-               See __call__ method of :class:`photo_ocr.detection.detection.Detection`
-        :return: If one image was supplied: one detection result (list of tuples of (bounding_box, bounding_polygon))
+        :return: If one image was supplied: one detection result (list of text polygons)
                  If list of images was supplied: list of detection results of same length and order as input list.
         """
-        detection_params = detection_params or {}
 
         # lazy initialisation - load the model if it has not been used before
         if self._detection_model is None:
-            self._detection_model = Detection()
+            self._detection_model = Detection(**self._detection_init_params)
 
         # check that all inputs are PIL images and identify if we have a single image or a list of images
         input_type = self._validate_image_input(images)
 
-        # run the detection and return bounding boxes and polygons
+        # run the detection and return the found text polygons
         if input_type == InputType.SINGLE_IMAGE:
             # detection model expects a list of images -> wrap image in list and grab first (only) item from output
-            return self._detection_model([images], **detection_params)[0]
+            return self._detection_model([images])[0]
         else:
-            return self._detection_model(images, **detection_params)
+            return self._detection_model(images)
 
-    def recognition(self, images: Union[Image.Image, List[Image.Image]]) \
-            -> Union[RecognitionResult, List[RecognitionResult]]:
+    def recognition(self,
+                    images: Union[Image.Image, List[Image.Image]]
+                    ) -> Union[RecognitionResult, List[RecognitionResult]]:
         """
         Run text recognition to "read" the word present in the image.
 
@@ -91,17 +88,13 @@ class PhotoOCR:
 
     def ocr(self,
             images: Union[Image.Image, List[Image.Image]],
-            detection_params: dict = None,
             confidence_threshold: float = 0.2,
             ) -> Union[List[OCRResult], List[List[OCRResult]]]:
         """
 
         :param images: One PIL image or a list of PIL images on which to run OCR.
-        :param detection_params: Dictionary of parameters to pass to the detection model,
-               See __call__ method of :class:`photo_ocr.detection.detection.Detection`
-               (recognition currently does not take any parameters, so no need for recognition_params)
         :param confidence_threshold: Only recognitions with confidence larger than this threshold will be returned.
-        :return: If one image was supplied: list of OCR results (tuple of bounding_box, polygon, word, confidence)
+        :return: If one image was supplied: list of OCR results (tuple of polygon, word, confidence)
                  If list of images was supplied: list of (list of OCR results) of same length and order as input list
         """
 
@@ -110,30 +103,31 @@ class PhotoOCR:
 
         # run the ocr
         if input_type == InputType.SINGLE_IMAGE:
-            return self._ocr_one(images, detection_params, confidence_threshold)
+            return self._ocr_one(images, confidence_threshold)
         else:
-            return [self._ocr_one(image, detection_params, confidence_threshold) for image in images]
+            return [self._ocr_one(image, confidence_threshold) for image in images]
 
     def _ocr_one(self,
                  image: Image.Image,
-                 detection_params: dict,
                  confidence_threshold: float) -> List[OCRResult]:
 
-        # get bounding boxes and bounding polygons of all words in the image
-        detections = self.detection(image, detection_params)
+        # get bounding polygons of all words in the image
+        text_polygons = self.detection(image)
 
         # cut out each of the found words and align horizontally
-        crops = [crop_and_align(image, result.bounding_box) for result in detections]
+        crops = [crop_and_align(image, polygon) for polygon in text_polygons]
 
         # run recognition on each of the cropped images, returns for each image a tuple of (word, confidence)
         recognitions = [self.recognition(crop) for crop in crops]
 
         # put detection results and recognition results together in a ocr result tuple
-        results = [OCRResult(det.bounding_box, det.bounding_polygon, rec.word, rec.confidence)
-                   for det, rec in zip(detections, recognitions)]
+        results = [OCRResult(polygon, rec.text, rec.confidence) for polygon, rec in zip(text_polygons, recognitions)]
 
         # keep only the high-confidence words
         results = [result for result in results if result.confidence >= confidence_threshold]
+
+        # most confident results come first
+        results = sorted(results, key=lambda item: item.confidence, reverse=True)
 
         return results
 

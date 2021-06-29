@@ -8,21 +8,41 @@ from PIL import Image
 import bbdraw
 
 
+#image = ImageOps.exif_transpose(image)
+
 def load_image(path: Union[Path, str]) -> Image.Image:
-    return Image.open(path).convert("RGB")
+    return Image.open(path).convert("RGB") # todo move to input todo transpose
 
 
 def save_image(image: Image.Image, path: Union[Path, str]):
     image.save(path)
 
 
-def crop_and_align(image: Image.Image, box: np.array):
+def _sort_clockwise(box: np.array) -> np.array:
     """
-    Crop and warp image so that it only contains the word selected by the bounding box, horizontally aligned
-    :param image:
+    Re-order corners of box to be clockwise, starting with corner with minimum x+y
     :param box:
     :return:
     """
+    start_index = box.sum(axis=1).argmin()
+    box = np.roll(box, 4 - start_index, 0)
+    box = np.array(box)
+    return box
+
+
+def crop_and_align(image: Image.Image, polygon: np.array):
+    """
+    Crop and warp image so that it only contains the word selected by the bounding polygon, horizontally aligned
+    :param image:
+    :param polygon:
+    :return:
+    """
+
+    polygon = np.array(polygon).astype(np.float32)
+    rect = cv2.minAreaRect(polygon)
+
+    box = cv2.boxPoints(rect)
+    box = _sort_clockwise(box)
 
     box_width = int(np.linalg.norm(box[0] - box[1]) + 1)
     box_height = int(np.linalg.norm(box[1] - box[2]) + 1)
@@ -41,8 +61,10 @@ def crop_and_align(image: Image.Image, box: np.array):
 
 
 def draw_ocr_results(image, results):
+    # draw most-confident results last, so they are on top
+    results = sorted(results, key=lambda item: item.confidence)
+
     for result in results:
-        polygon = [(x, y) for x, y in result.bounding_polygon]
-        label = "{} ({})".format(result.word, round(result.confidence, 2))
-        image = bbdraw.polygon(image, polygon, color="green", text=label)
+        label = "{} ({:.2f})".format(result.text, result.confidence)
+        image = bbdraw.polygon(image, result.polygon, color=bbdraw.bbdraw.PURPLE, text=label)
     return image
