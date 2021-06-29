@@ -8,9 +8,6 @@ from photo_ocr.detection.craft.preprocessing import calculate_resize_ratio, init
 from photo_ocr.detection.craft.postprocessing import init_postprocessing
 
 
-DetectionResult = NamedTuple("DetectionResult", [("bounding_box", np.array), ("bounding_polygon", np.array)])
-
-
 class Detection:
     def __init__(self):
         """
@@ -29,7 +26,7 @@ class Detection:
                  combine_words_to_lines: bool = False,
                  text_threshold_first_pass: float = 0.4,
                  text_threshold_second_pass: float = 0.7,
-                 link_threshold: float = 0.4) -> List[List[DetectionResult]]:
+                 link_threshold: float = 0.4) -> List[List[np.array]]:
         """
         Run text detection on the given images.
 
@@ -59,8 +56,7 @@ class Detection:
                     this pixel is between two text characters (called affinity score in the paper). During
                     postprocessing, this score is used to link individual characters together as words.
                     Only pixels that are above the link_threshold are considered. Value must be in [0.0, 1.0]
-        :return: List of detection results, same length and order as input array. Each detection result is a List of
-                 (bounding_box, bounding_polygon) tuples.
+        :return: One detection result per input image. Each detection result is a list of all found text polygons.
         """
 
         # currently no batching implemented, so just run all images one after the other.
@@ -81,7 +77,7 @@ class Detection:
                           combine_words_to_lines: bool,
                           text_threshold_first_pass: float,
                           text_threshold_second_pass: float,
-                          link_threshold: float):
+                          link_threshold: float) -> List[np.array]:
         """
         Helper function that runs the text detection on one image.
         :param image:
@@ -108,19 +104,15 @@ class Detection:
         score_text = score_text[0, :, :].cpu().data.numpy()
         score_link = score_link[0, :, :].cpu().data.numpy()
 
-        # for each detected word, calculate a bounding box and a tight polygon around the word
-        # this step returns list of tuples of (bounding_box, polygon)
+        # for each detected word, calculate first a bounding box and then a tight polygon around the word
         postprocess = init_postprocessing(text_threshold_first_pass, text_threshold_second_pass, link_threshold)
-        detections = postprocess(score_text, score_link)
+        polygons = postprocess(score_text, score_link)
 
         # detections are based on the resized image -> need to map them back to the original image
         ratio = 1.0 / resize_ratio  # to reverse the initial resizing
         ratio = ratio * 2.0  # the craft net produces segmentation maps that are half the size of the input image
 
         # perform the adjustment with the ratio just calculated
-        detections = [(box * ratio, polygon * ratio) for box, polygon in detections]
+        polygons = [polygon * ratio for polygon in polygons]
 
-        # wrap the detections into convenient named tuples for easier access
-        detections = [DetectionResult(box, polygon) for box, polygon in detections]
-
-        return detections
+        return polygons

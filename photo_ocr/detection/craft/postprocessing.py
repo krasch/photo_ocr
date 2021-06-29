@@ -11,7 +11,7 @@ def init_postprocessing(text_threshold_first_pass: float,
                         text_threshold_second_pass: float,
                         link_threshold: float) -> Callable:
 
-    def postprocess(score_text: np.array, score_link: np.array) -> Generator[Tuple[np.array, np.array], None, None]:
+    def postprocess(score_text: np.array, score_link: np.array) -> Generator[np.array, None, None]:
         """
         Find the bounding boxes and polygons around every detected word.
         :param score_text: for each pixel, how likely is it that this pixel is part of a text character
@@ -36,6 +36,6 @@ def init_postprocessing(text_threshold_first_pass: float,
                 # (which is also a polygon after all..)
                 polygon = bounding_box
 
-            yield bounding_box, polygon
+            yield polygon
 
     return postprocess
