@@ -205,25 +205,6 @@ crop = load_image("crop.jpg")
 text, confidence = recognition(crop)
 ```
 
-### Running multiple images
-
-You can also run the `ocr`, `recognition`, `detection` functions on
-a list of images instead of a single image:
-
-```python
-from photo_ocr import load_image, ocr, draw_ocr
-
-images = [load_image("docs/images/pub.jpg"),
-          load_image("docs/images/stickers.jpg"),
-          load_image("docs/images/hairdresser.jpg")]
-
-all_results = ocr(images)
-
-for image, results_for_image in zip(images, all_results):
-    image = draw_ocr(image, results_for_image)
-    image.save("some_filename.jpg")
-```
-
 ## <a name="section-troubleshooting">4. Troubleshooting</a>
 
 
