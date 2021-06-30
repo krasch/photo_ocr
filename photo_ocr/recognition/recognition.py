@@ -1,14 +1,12 @@
-from typing import Callable, List, NamedTuple
+from typing import Callable, List
 
 import torch
 from PIL import Image
 
+from photo_ocr.typing import RecognitionResult
 from photo_ocr.recognition.model_zoo import TPS_ResNet_BiLSTM_Attn
 from photo_ocr.recognition.models.preprocessing import init_transforms
 from photo_ocr.util.batchify import run_in_batches
-
-
-RecognitionResult = NamedTuple("RecognitionResult", [("text", str), ("confidence", float)])
 
 
 class Recognition:

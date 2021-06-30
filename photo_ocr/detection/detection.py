@@ -1,13 +1,11 @@
-from typing import List, Tuple
+from typing import List
 
 from PIL import Image
 
+from photo_ocr.typing import Polygon
 from photo_ocr.detection.model_zoo import craft
 from photo_ocr.detection.craft.preprocessing import calculate_resize_ratio, init_transforms
 from photo_ocr.detection.craft.postprocessing import init_postprocessing
-
-# polygon in PIL format: list of [(x1, y1), (x2, y2), ...]
-Polygon = List[Tuple[float, float]]
 
 
 class Detection:

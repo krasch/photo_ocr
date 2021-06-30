@@ -1,21 +1,17 @@
 from enum import Enum
-from typing import Union, List, NamedTuple
+from typing import Union, List
 
 from PIL import Image
 
-from photo_ocr.detection.detection import Detection, Polygon
-from photo_ocr.recognition.recognition import Recognition, RecognitionResult
+from photo_ocr.typing import OCRResult, RecognitionResult, Polygon
+from photo_ocr.detection.detection import Detection
+from photo_ocr.recognition.recognition import Recognition
 from photo_ocr.util.image import crop_and_align
 
 
 class InputType(Enum):
     SINGLE_IMAGE = 1
     IMAGE_LIST = 2
-
-
-OCRResult = NamedTuple("OCRResult", [("polygon", Polygon),
-                                     ("text", str),
-                                     ("confidence", float)])
 
 
 class PhotoOCR:
