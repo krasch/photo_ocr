@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='photo_ocr',
-    version='0.0.4-alpha',
+    version='0.0.5-alpha',
     packages=find_packages(exclude=["tests", "tests.*"]),
     url='https://github.com/krasch/photo_ocr',
     license_files=('LICENSE.txt', 'LICENSE_detection.txt', 'LICENSE_recognition.txt'),
