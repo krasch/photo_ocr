@@ -20,7 +20,7 @@ def test_end_to_end():
         polygon_actual, text_actual, confidence_actual = item_actual
         polygon_expected, text_expected, confidence_expected = item_expected
 
-        assert_array_almost_equal(polygon_actual, polygon_expected)
-        assert_almost_equal(confidence_actual, confidence_expected)
+        assert_array_almost_equal(polygon_actual, polygon_expected, decimal=4)
+        assert_almost_equal(confidence_actual, confidence_expected, decimal=4)
         assert text_actual == text_expected
 
