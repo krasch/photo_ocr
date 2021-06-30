@@ -2,11 +2,13 @@ import math
 
 from PIL import Image
 from torchvision import transforms as transforms
+from torchvision.transforms import functional as F
 
 
 class ResizeRatio:
-    def __init__(self, max_size):
+    def __init__(self, max_size, interpolation):
         self.target_height, self.target_width = max_size
+        self.interpolation = interpolation
 
     def __call__(self, image: Image.Image):
         current_width, current_height = image.size
@@ -19,8 +21,7 @@ class ResizeRatio:
         if new_width > self.target_width:
             new_width = self.target_width
 
-        resized_image = image.resize((new_width, self.target_height), Image.BICUBIC)
-        return resized_image
+        return F.resize(image, (self.target_height, new_width), interpolation=self.interpolation)
 
 
 class PadRight(object):
@@ -48,15 +49,22 @@ class PadRight(object):
 def init_transforms(image_shape, keep_ratio):
     target_height, target_width, _ = image_shape
 
+    try:
+        # torchvision > 0.8 uses custom interpolation modes
+        interpolation = transforms.InterpolationMode.BICUBIC
+    except AttributeError:
+        # torchvision <= 0.8 used PIL interpolation modes
+        interpolation = Image.BICUBIC
+
     if keep_ratio:
         return transforms.Compose([transforms.Grayscale(),
-                                   ResizeRatio((target_height, target_width)),
+                                   ResizeRatio((target_height, target_width), interpolation=interpolation),
                                    PadRight(target_width),
                                    transforms.ToTensor(),
                                    transforms.Normalize(mean=0.5, std=0.5)])
     else:
         return transforms.Compose([transforms.Grayscale(),
-                                   transforms.Resize((target_height, target_width), interpolation=Image.BICUBIC),
+                                   transforms.Resize((target_height, target_width), interpolation=interpolation),
                                    transforms.ToTensor(),
                                    transforms.Normalize(mean=0.5, std=0.5)])
 

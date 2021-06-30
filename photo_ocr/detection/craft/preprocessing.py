@@ -5,12 +5,13 @@ from torchvision.transforms import functional as F
 
 
 class ResizeRatio:
-    def __init__(self, ratio):
+    def __init__(self, ratio, interpolation):
         self.ratio = ratio
+        self.interpolation = interpolation
 
     def __call__(self, img: Image.Image):
         target_size = int(img.height * self.ratio), int(img.width * self.ratio)
-        return F.resize(img, target_size, interpolation=Image.BILINEAR)
+        return F.resize(img, target_size, interpolation=self.interpolation)
 
 
 class PadTo32:
@@ -45,7 +46,15 @@ def calculate_resize_ratio(img: Image.Image, max_size, mag_ratio):
 
 
 def init_transforms(resize_ratio):
-    return transforms.Compose([ResizeRatio(resize_ratio),
+
+    try:
+        # torchvision > 0.8 uses custom interpolation modes
+        interpolation = transforms.InterpolationMode.BILINEAR
+    except AttributeError:
+        # torchvision <= 0.8 used PIL interpolation modes
+        interpolation = Image.BILINEAR
+
+    return transforms.Compose([ResizeRatio(resize_ratio, interpolation),
                                PadTo32(),
                                transforms.ToTensor(),
                                transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])

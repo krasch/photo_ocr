@@ -80,15 +80,21 @@ Other alphabets are currently not supported by photo_ocr.
 
 ## <a name="section-installation">2. Installation</a>
 
-photo_ocr works with Python>=3.6, todo pytorch/torchvision version.
+Needs __python>=3.6__ 
+
+photo_ocr works with torchvision >=0.7 and <=0.10. If there is a newer version of torchvision which is not yet supported
+by photo_ocr, please open a github issue to let us know!
 
 ```
 pip install photo_ocr
 ```
 
+
+
 All __models are automatically downloaded__ the first time they are needed. The
 models are stored locally in the standard pytorch model directory, which
 you can change by setting the `TORCH_HOME` environment variable (see the [official pytorch documentation](https://pytorch.org/docs/stable/hub.html) for details).
+
 
 ## <a name="section-usage">3. Usage</a>
 
