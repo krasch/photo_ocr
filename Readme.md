@@ -2,23 +2,24 @@
 
 Read text in photos / images with complex backgrounds with this easy-to-use Python library.
 
-![Image showing recognized text](images/pub.jpg "Image showing recognized text")
+![Image showing recognized text](docs/images/pub.jpg "Image showing recognized text")
 
 ```python
 from PIL import Image
-from photo_ocr import ocr, draw_ocr_results
+from photo_ocr import ocr, draw_ocr
 
-image = Image.open("images/pub.jpg")
+# (download pub.jpg here: https://github.com/krasch/photo_ocr/blob/master/pub.jpg)
+image = Image.open("pub.jpg")
 
 # run the ocr
 results = ocr(image)
 print(results)
 
 # draw bounding polygons and text on the image
-image = draw_ocr_results(image, results)
+image = draw_ocr(image, results)
 
 # done!
-image.save("images/pub_annotated.jpg")
+image.save("pub_ocr.jpg")
 ```
 
 ## Table of contents
@@ -44,7 +45,7 @@ text recognition" (e.g. photo_ocr).
 
 |Classic OCR (e.g. tesseract)| Scene text recognition (e.g. photo_ocr) |
 --- | --- |
-|![Photo of a book page](images/book.jpg "Photo of a book page")|![Photo of a board with many stickers and graffiti](images/stickers.jpg "Photo of a board with many stickers and graffiti")|
+|![Photo of a book page](docs/images/book.jpg "Photo of a book page")|![Photo of a board with many stickers and graffiti](docs/images/stickers.jpg "Photo of a board with many stickers and graffiti")|
 |Black text on white background, standard font, layout matters (lines / paragraphs / columns). | Large variation in fonts, font sizes, colours, angles. Mostly individual words, no consistent layout.|
 
 
@@ -54,7 +55,7 @@ photo_ocr processes an image in three stages:
 
 | <div style="width:200px">1. Text detection </div> | <div style="width:200px">2. Cropping</div> | <div style="width:200px">3. Text recognition </div>| 
 :---: | :---: | :---: |
-![](images/hairdresser.jpg) | ![](images/crop0.png) <br/>![](images/crop1.png)  <br/>![](images/crop2.png)| <br/> erisox (0.08, fail!), <br/> <br/>cheri (0.97),<br/><br/>solstudio (0.94) |
+![](docs/images/hairdresser.jpg) | ![](docs/images/crop0.png) <br/>![](docs/images/crop1.png)  <br/>![](docs/images/crop2.png)| <br/> erisox (0.08, fail!), <br/> <br/>cheri (0.97),<br/><br/>solstudio (0.94) |
 Find bounding polygons around words | Crop and align horizontally | "Reading" the text from the cropped images |
 
 ### Which models are supported?
@@ -91,7 +92,7 @@ you can change by setting the `TORCH_HOME` environment variable (see the [offici
 
 ## <a name="section-usage">3. Usage</a>
 
-(You can find a script containing all the snippets below at [example.py](example.py))
+(You can find a script containing all the snippets below at [example.py](https://github.com/krasch/photo_ocr/blob/master/example.py))
 
 ### Input
 
@@ -101,14 +102,17 @@ You can use PIL directly to read the image from file.
 
 ```python
 from PIL import Image
-image = Image.open("images/pub.jpg")
+
+# (download pub.jpg here: https://github.com/krasch/photo_ocr/blob/master/pub.jpg)
+image = Image.open("pub.jpg")
 ```
 For convenience, photo_ocr also offers a `load_image` function, which
 opens the image and rotates it according to the EXIF metadata, if necessary.
 
 ```python
 from photo_ocr import load_image
-image = load_image("images/pub.jpg")
+
+image = load_image("pub.jpg")
 ```
 ### Running the OCR
 
@@ -133,7 +137,7 @@ for result in results:
     print(result.polygon)
     
     # the actual text (a string)
-    print(result.word)
+    print(result.text)
     
     # the recognition confidence (a number in [0.0, 1.0])
     print(result.confidence)
@@ -143,22 +147,21 @@ Since each entry in the results list is a`namedtuple`, you can
 also loop over the results like this: 
 
 ```python
-for polygon, word, confidence in results:
+for polygon, text, confidence in results:
     print(polygon)
-    print(word)
+    print(text)
     print(confidence)
 ```
 
 ### Visualising the results
 
-Use the `draw_ocr_results` method to draw the
-recognition results onto the original image. 
+Use the `draw_ocr` method to draw the OCR results onto the original image.
 
 ```python
-from photo_ocr import draw_ocr_results
+from photo_ocr import draw_ocr
 
-image = draw_ocr_results(image, results)
-image.save("images/pub_annotated.jpg")
+image = draw_ocr(image, results)
+image.save("pub_ocr.jpg")
 ```
 
 ### Running only text detection
@@ -177,14 +180,14 @@ for polygon in polygons:
     print(polygon)
 ```
 
-You can also use `draw_ocr_results` function to draw the
+You can use the `draw_detections` function to draw the
 results of the `detection`:
 
 ```python
-from photo_ocr import draw_ocr_results
+from photo_ocr import draw_detections
 
-image = draw_ocr_results(image, polygons)
-image.save("images/pub_detections.jpg")
+image = draw_detections(image, polygons)
+image.save("pub_detections.jpg")
 ```
 
 ### Running only text recognition
@@ -196,7 +199,8 @@ text polygon. The text should be aligned horizontally.
 ```python
 from photo_ocr import load_image, recognition
 
-crop = load_image("images/crop0.png")
+# (download crop.jpg here: https://github.com/krasch/photo_ocr/blob/master/crop.jpg)
+crop = load_image("crop.jpg")
 
 text, confidence = recognition(crop)
 ```
@@ -206,19 +210,17 @@ text, confidence = recognition(crop)
 You can also run the `ocr`, `recognition`, `detection` functions on
 a list of images instead of a single image:
 
-
 ```python
-from photo_ocr import load_image, ocr, draw_ocr_results
+from photo_ocr import load_image, ocr, draw_ocr
 
-
-images = [load_image("images/pub.jpg"), 
-          load_image("images/stickers.jpg"),
-          load_image("images/hairdresser.jpg")]
+images = [load_image("docs/images/pub.jpg"),
+          load_image("docs/images/stickers.jpg"),
+          load_image("docs/images/hairdresser.jpg")]
 
 all_results = ocr(images)
 
 for image, results_for_image in zip(images, all_results):
-    image = draw_ocr_results(image, results_for_image)
+    image = draw_ocr(image, results_for_image)
     image.save("some_filename.jpg")
 ```
 
@@ -227,11 +229,11 @@ for image, results_for_image in zip(images, all_results):
 
 | Example | Description |  Reason | Solution | 
 :---: | :--- | :--- | :--- |
-![](images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
-![](images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param-model">case-sensitive model</a>, which also supports 30 common special characters. 
-![](images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. | Rotate the input image by 90°. |
-![](images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, decrease the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>. |
-![](images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, increase the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>.  |
+![](docs/images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
+![](docs/images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param-model">case-sensitive model</a>, which also supports 30 common special characters. 
+![](docs/images/angle.jpg)  | Text area is found, but text recognition returns only one-letter results (e.g. e, i, a) | The angle of the text is so steep, that the crop is being rotated in the wrong direction. | Rotate the input image by 90°. |
+![](docs/images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, decrease the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>. |
+![](docs/images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, increase the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>.  |
 
 
 

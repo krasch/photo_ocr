@@ -1,15 +1,11 @@
-.refactoraid*
-refactoraid.py
+*refactoraid*
 tests
 scripts
-result
 data
-test.py
 examples
-docs
-weights
-test_detection.py
-test_recognition.py
+pub_detections.jpg
+pub_ocr.jpg
+evaluate.py
 
 .idea
 __pycache__
