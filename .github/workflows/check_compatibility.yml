@@ -1,4 +1,4 @@
-name: Run tests
+name: Run torchvision compatibility check
 
 on: workflow_dispatch
 
