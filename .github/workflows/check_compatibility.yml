@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python 3.6
+    - name: Set up Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.6
@@ -18,6 +18,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install torchvision==0.7.0
         pip install -r requirements.txt
+    - name: Cache model files
+      uses: actions/cache@v2
+      with:
+        key: ocr_models
+        path: |
+            ~/.cache/torch/hub/checkpoints/
+
     - name: Test with pytest
       run: |
         pip install pytest
