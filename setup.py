@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -6,8 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='photo_ocr',
-    version='0.0.3-alpha',
-    packages=['photo_ocr'],
+    version='0.0.4-alpha',
+    packages=find_packages(exclude=["tests", "tests.*"]),
     url='https://github.com/krasch/photo_ocr',
     license_files=('LICENSE.txt', 'LICENSE_detection.txt', 'LICENSE_recognition.txt'),
     author='krasch',
