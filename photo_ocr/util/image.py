@@ -1,10 +1,12 @@
 from pathlib import Path
-from typing import Union
+from typing import Union, Tuple, List
 
 from PIL import Image, ImageOps
 import cv2
 import numpy as np
 import bbdraw
+
+from photo_ocr.typing import Polygon, OCRResult
 
 
 def load_image(path: Union[Path, str]) -> Image.Image:
@@ -55,7 +57,13 @@ def crop_and_align(image: Image.Image, polygon: np.array):
     return cropped
 
 
-def draw_ocr(image, results):
+def draw_ocr(image: Image.Image, results: List[OCRResult]) -> Image.Image:
+    """
+    Draw text polygons + found texts/confidences onto image. The input image is not changed, instead a copy is returned.
+    :param image: Image to be annotated
+    :param results: List of OCRResults
+    :return: Annotated image
+    """
     # draw most-confident results last, so they are on top
     results = sorted(results, key=lambda item: item.confidence)
 
@@ -65,7 +73,13 @@ def draw_ocr(image, results):
     return image
 
 
-def draw_detections(image, results):
-    for polygon in results:
+def draw_detections(image: Image.Image, polygons: List[Polygon]) -> Image.Image:
+    """
+    Draw polygons onto image. The input image is not changed, instead a copy is returned.
+    :param image: Image to be annotated
+    :param polygons: List of polygons
+    :return: Annotated image
+    """
+    for polygon in polygons:
         image = bbdraw.polygon(image, polygon)
     return image
