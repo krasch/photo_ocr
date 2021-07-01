@@ -11,7 +11,7 @@ from photo_ocr import ocr
 def test_end_to_end():
     expected = np.load("tests/pub.jpg.expected.npy", allow_pickle=True)
 
-    image = Image.open("pub.jpg")
+    image = Image.open("tests/pub.jpg")
     actual = ocr(image)
 
     assert len(actual) == len(expected)
