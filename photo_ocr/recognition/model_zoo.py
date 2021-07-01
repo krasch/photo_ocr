@@ -10,14 +10,16 @@ from photo_ocr.recognition.models.modules.wrappers import transformation, featur
 CHARACTERS = list("0123456789abcdefghijklmnopqrstuvwxyz")
 CHARACTERS_CASE_SENSITIVE = CHARACTERS + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~")
 
+# this github repository re-hosts the pre-trained model open sourced by Clova AI Research / NAVER Corp
+# see README.md#section-licensing and LICENSE_RECOGNITION.txt
+BASE_URL = "https://github.com/krasch/photo_ocr_models/releases/download/text-recognition-models-20201210/"
 
-# model urls linked in original repo
 model_urls = {
-    "None_VGG_None_CTC": "https://www.dropbox.com/sh/j3xmli4di1zuv3s/AACpKykhWSRBUU7xl2LGgt9ja/None-VGG-None-CTC.pth?dl=1",
-    "None_ResNet_None_CTC": "https://www.dropbox.com/sh/j3xmli4di1zuv3s/AABzCC1KGbIRe2wRwa3diWKwa/None-ResNet-None-CTC.pth?dl=1",
-    "TPS_ResNet_BiLSTM_Attn": "https://www.dropbox.com/sh/j3xmli4di1zuv3s/AADbTu4LF-nMUBmC43_RQ8OGa/TPS-ResNet-BiLSTM-Attn.pth?dl=1",
-    "TPS_ResNet_BiLSTM_Attn_case_sensitive": "https://www.dropbox.com/sh/j3xmli4di1zuv3s/AABIa4z2u5InghKfUpiLREZKa/TPS-ResNet-BiLSTM-Attn-case-sensitive.pth?dl=1",
-    "TPS_ResNet_BiLSTM_CTC": "https://www.dropbox.com/sh/j3xmli4di1zuv3s/AAB0X-sX05-0psb4uXWPYSmza/TPS-ResNet-BiLSTM-CTC.pth?dl=1"
+    "None_VGG_None_CTC": BASE_URL + "None-VGG-None-CTC.pth",
+    "None_ResNet_None_CTC": BASE_URL + "None-ResNet-None-CTC.pth",
+    "TPS_ResNet_BiLSTM_Attn": BASE_URL + "TPS-ResNet-BiLSTM-Attn.pth",
+    "TPS_ResNet_BiLSTM_Attn_case_sensitive": BASE_URL + "TPS-ResNet-BiLSTM-Attn-case-sensitive.pth",
+    "TPS_ResNet_BiLSTM_CTC": BASE_URL + "TPS-ResNet-BiLSTM-CTC.pth"
 }
 
 
