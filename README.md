@@ -1,6 +1,7 @@
 # Photo OCR
 
-Read text in photos / images with complex backgrounds with this easy-to-use Python library.
+Read text in photos / images with complex backgrounds with this easy-to-use Python library. 
+Based on deep learning (torchvision) models released by [Clova AI Research ](https://github.com/clovaai/).
 
 ![Image showing recognized text](https://raw.githubusercontent.com/krasch/photo_ocr/master/docs/images/pub.jpg "Image showing recognized text")
 
@@ -29,7 +30,7 @@ image.save("pub_ocr.jpg")
 3. [Usage](#section-usage)
 4. [Troubleshooting](#section-troubleshooting)
 5. [Detailed configuration / parameters](#section-parameters)
-
+4. [Licensing](#section-licensing)
 
 ## <a id="section-introduction">1. Introduction</a>
 
@@ -60,7 +61,7 @@ Find bounding polygons around words | Crop and align horizontally | "Reading" th
 
 ### Which models are supported?
 
-photo_ocr is a wrapper around deep learning models kindly open-sourced by [Clova.ai](https://clova.ai).
+photo_ocr is a wrapper around deep learning models kindly open-sourced by [Clova AI Research](https://github.com/clovaai/).
 
 For text detection, photo_ocr uses the CRAFT text detection model ([paper](https://arxiv.org/pdf/1904.01941.pdf), [original source code](https://github.com/clovaai/CRAFT-pytorch)). CRAFT 
 has been released under MIT license (see file [LICENSE_detection](LICENSE_detection)). 
@@ -296,3 +297,14 @@ ocr = photo_ocr.ocr
 detection = photo_ocr.detection
 recognition = photo_ocr.recognition
 ```
+
+
+##### <a id="section-licensing">Licensing</a>
+
+This repository contains three license files:
+
+| Filename | License | Owner | What does it cover? |
+:--- | :--- | :---  | :--- |
+| LICENSE_detection.txt (Copy of [original license](https://github.com/clovaai/CRAFT-pytorch/blob/6c809d409996d4516e393f04e89965f070ecc14a/LICENSE))| MIT | NAVER Corp. | The model architectures in photo_ocr.detection as well as some of the postprocessing code. Also the detection model weights hosted on [https://github.com/krasch/photo_ocr_models](https://github.com/krasch/photo_ocr_models/) |
+| LICENSE_recognition.txt  (Copy of [original license](https://github.com/clovaai/deep-text-recognition-benchmark/blob/2b38eb25749519c9a3646e19628cd7b6a398043d/LICENSE.md))| Apache 2.0 | original license file does not contain a copyright owner, but presumably also NAVER Corp.| The model architectures in photo_ocr.recognition as well as some of the postprocessing code. Also the recognition model weights hosted on [https://github.com/krasch/photo_ocr_models](https://github.com/krasch/photo_ocr_models/) |
+| LICENSE.txt | Apache 2.0 | krasch | Everything else |
