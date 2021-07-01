@@ -9,8 +9,8 @@ Based on deep learning (torchvision) models released by [Clova AI Research ](htt
 from PIL import Image
 from photo_ocr import ocr, draw_ocr
 
-# (download pub.jpg here: https://github.com/krasch/photo_ocr/blob/master/pub.jpg)
-image = Image.open("pub.jpg")
+# (download example.jpg here: https://github.com/krasch/photo_ocr/blob/master/example.jpg)
+image = Image.open("example.jpg")
 
 # run the ocr
 results = ocr(image)
@@ -20,7 +20,7 @@ print(results)
 image = draw_ocr(image, results)
 
 # done!
-image.save("pub_ocr.jpg")
+image.save("example_ocr.jpg")
 ```
 
 ## Table of contents
@@ -110,8 +110,8 @@ You can use PIL directly to read the image from file.
 ```python
 from PIL import Image
 
-# (download pub.jpg here: https://github.com/krasch/photo_ocr/blob/master/pub.jpg)
-image = Image.open("pub.jpg")
+# (download example.jpg here: https://github.com/krasch/photo_ocr/blob/master/example.jpg)
+image = Image.open("example.jpg")
 ```
 For convenience, photo_ocr also offers a `load_image` function, which
 opens the image and rotates it according to the EXIF metadata, if necessary.
@@ -119,7 +119,7 @@ opens the image and rotates it according to the EXIF metadata, if necessary.
 ```python
 from photo_ocr import load_image
 
-image = load_image("pub.jpg")
+image = load_image("example.jpg")
 ```
 ### Running the OCR
 
@@ -168,7 +168,7 @@ Use the `draw_ocr` method to draw the OCR results onto the original image.
 from photo_ocr import draw_ocr
 
 image = draw_ocr(image, results)
-image.save("pub_ocr.jpg")
+image.save("example_ocr.jpg")
 ```
 
 ### Running only text detection
@@ -194,7 +194,7 @@ results of the `detection`:
 from photo_ocr import draw_detections
 
 image = draw_detections(image, polygons)
-image.save("pub_detections.jpg")
+image.save("example_detections.jpg")
 ```
 
 ### Running only text recognition

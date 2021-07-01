@@ -1,8 +1,8 @@
 from photo_ocr import load_image, ocr, detection, recognition, draw_ocr, draw_detections
 
 # you can also use PIL Image.open, but load_image automatically rotates the image according to the EXIF metadata!
-# (download pub.jpg here: https://github.com/krasch/photo_ocr/blob/master/pub.jpg)
-image = load_image("pub.jpg")
+# (download example.jpg here: https://github.com/krasch/photo_ocr/blob/master/example.jpg)
+image = load_image("example.jpg")
 
 # run the ocr
 results = ocr(image)
@@ -29,10 +29,10 @@ for polygon, text, confidence in results:
 image = draw_ocr(image, results)
 
 # done!
-image.save("pub_ocr.jpg")
+image.save("example_ocr.jpg")
 
 # use the `detection` function to only run the text detection step
-image = load_image("pub.jpg")
+image = load_image("example.jpg")
 polygons = detection(image)
 
 # list of polygons where text was found
@@ -44,7 +44,7 @@ for polygon in polygons:
 
 # draw_detections draws detection results
 image = draw_detections(image, polygons)
-image.save("pub_detections.jpg")
+image.save("example_detections.jpg")
 
 # use the `recognition` function to only run the text recognition step
 # the input image must have been cropped to text polygon, text should be aligned horizontally
