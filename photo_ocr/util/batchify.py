@@ -10,7 +10,7 @@ def run_in_batches(model, images, batch_size):
     batches = DataLoader(images, batch_size=batch_size, shuffle=False, num_workers=1, pin_memory=True)
 
     for batch in batches:
-        batch.to(DEVICE)
+        batch = batch.to(DEVICE)
 
         # run the model on the batch
         predictions = model(batch).cpu().data.numpy()
