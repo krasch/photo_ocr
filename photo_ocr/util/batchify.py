@@ -4,6 +4,7 @@ from photo_ocr.util.cuda import DEVICE
 
 
 def run_in_batches(model, images, batch_size):
+    print(len(images))
     # this data loader takes care of any batch-ification etc
     # maybe this is too much overhead? but it sure is convenient
     # check back here and maybe refactor to native python code if running into trouble with this
