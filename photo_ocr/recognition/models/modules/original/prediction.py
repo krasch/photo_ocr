@@ -1,11 +1,11 @@
 # copied from https://github.com/clovaai/deep-text-recognition-benchmark/blob/master/modules/prediction.py
 # the original file did not contain an inline license or copyright
 # please see LICENSE_recognition.md in the root folder of this repository for licensing information
+# a bunch of to_device calls have been removed compared to the original file!
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class Attention(nn.Module):
@@ -20,7 +20,7 @@ class Attention(nn.Module):
     def _char_to_onehot(self, input_char, onehot_dim=38):
         input_char = input_char.unsqueeze(1)
         batch_size = input_char.size(0)
-        one_hot = torch.FloatTensor(batch_size, onehot_dim).zero_().to(device)
+        one_hot = torch.FloatTensor(batch_size, onehot_dim).zero_()
         one_hot = one_hot.scatter_(1, input_char, 1)
         return one_hot
 
@@ -34,9 +34,9 @@ class Attention(nn.Module):
         batch_size = batch_H.size(0)
         num_steps = batch_max_length + 1  # +1 for [s] at end of sentence.
 
-        output_hiddens = torch.FloatTensor(batch_size, num_steps, self.hidden_size).fill_(0).to(device)
-        hidden = (torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(device),
-                  torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(device))
+        output_hiddens = torch.FloatTensor(batch_size, num_steps, self.hidden_size).fill_(0)
+        hidden = (torch.FloatTensor(batch_size, self.hidden_size).fill_(0),
+                  torch.FloatTensor(batch_size, self.hidden_size).fill_(0))
 
         if is_train:
             for i in range(num_steps):
@@ -48,8 +48,8 @@ class Attention(nn.Module):
             probs = self.generator(output_hiddens)
 
         else:
-            targets = torch.LongTensor(batch_size).fill_(0).to(device)  # [GO] token
-            probs = torch.FloatTensor(batch_size, num_steps, self.num_classes).fill_(0).to(device)
+            targets = torch.LongTensor(batch_size).fill_(0)  # [GO] token
+            probs = torch.FloatTensor(batch_size, num_steps, self.num_classes).fill_(0)
 
             for i in range(num_steps):
                 char_onehots = self._char_to_onehot(targets, onehot_dim=self.num_classes)
