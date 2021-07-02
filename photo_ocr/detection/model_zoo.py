@@ -36,8 +36,8 @@ def craft(pretrained, progress):
         state_dict = rename_layers(state_dict)
         model.refiner.load_state_dict(state_dict)
 
-    model.craft.to(DEVICE)
-    model.refiner.to(DEVICE)
+    model.craft = model.craft.to(DEVICE)
+    model.refiner = model.refiner.to(DEVICE)
 
     return model
 
