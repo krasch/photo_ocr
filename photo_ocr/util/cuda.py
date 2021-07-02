@@ -8,3 +8,6 @@ DEVICE = torch.device('cuda' if CUDA else 'cpu')
 if CUDA:
     cudnn.benchmark = True
     cudnn.deterministic = True
+
+
+RECOGNITION_BATCH_SIZE = 2
