@@ -23,7 +23,7 @@ class Detection:
         Combines the image preprocessing, model and result postprocessing steps.
         Currently only supports the CRAFT text detection method.
 
-         :param image_max_size:
+        :param image_max_size:
                     During image pre-processing before running text detection, the image will be resized such that the
                     larger side of the image is smaller than image_max_size.
         :param image_magnification:
