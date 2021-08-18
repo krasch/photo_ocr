@@ -5,8 +5,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+from photo_ocr.util.cuda import DEVICE
+device = DEVICE
 
 class Attention(nn.Module):
 
