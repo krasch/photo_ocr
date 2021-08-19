@@ -5,6 +5,13 @@ from PIL import Image
 from photo_ocr import ocr
 
 
+# utility function for sorting
+def left_upper_corner_x_plus_y(ocr_result):
+    polygon, text, confidence = ocr_result
+    x, y = polygon[0]   # polygons are always arranged so that left-upper corner comes first
+    return x+y
+
+
 # certainly not a unit test, just to check if photo_ocr behaves the same for different versions of required libraries
 # (have been burned before by subtle, unannounced changes in deep learning libraries)
 # surely could be doing something more clever here + try more than one image, but its a start
@@ -18,10 +25,10 @@ def test_end_to_end():
 
     # sometimes there are smaller differences in the detection confidence (again I think based on opencv version)
     # since the entries are sorted by confidence, the sorting might differ between actual and expected
-    # however the following step assumes that actual and expected are in the same order -> resort them here
-    # sort by the (x+y) of the left-upper corner entry.polygon[0] -> most left-upper bounding box comes first
-    actual = sorted(actual, key=lambda entry: sum(entry.polygon[0]))  # sum = x+y
-    expected = sorted(expected, key=lambda entry: sum(entry.polygon[0]))
+    # however the following step assumes that actual and expected are in the same order
+    # -> resort them here by left-upper corner of polygon (smallest comes first)
+    actual = sorted(actual, key=left_upper_corner_x_plus_y)
+    expected = sorted(expected, key=left_upper_corner_x_plus_y)
 
     for item_actual, item_expected in zip(actual, expected):
         polygon_actual, text_actual, confidence_actual = item_actual
