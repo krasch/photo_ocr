@@ -7,7 +7,7 @@ from photo_ocr.typing import RecognitionResult
 from photo_ocr.recognition.model_zoo import TPS_ResNet_BiLSTM_Attn
 from photo_ocr.recognition.models.preprocessing import init_transforms
 from photo_ocr.util.batchify import run_in_batches
-from photo_ocr.util.cuda import RECOGNITION_BATCH_SIZE
+from photo_ocr.util.config import config
 
 
 class Recognition:
@@ -57,7 +57,7 @@ class Recognition:
         # run the prediction, avoid memory errors by doing that in batches
         # run_in_batches is a generator function -> wrap in list
         with torch.no_grad():
-            scores = list(run_in_batches(self.model, images, batch_size=RECOGNITION_BATCH_SIZE))
+            scores = list(run_in_batches(self.model, images, batch_size=config.get_recognition_batch_size()))
 
         # convert the predicted scores into the actual characters
         results = [self.postprocess(pred) for pred in scores]

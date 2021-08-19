@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from torchvision.models.utils import load_state_dict_from_url
 
-from photo_ocr.util.cuda import DEVICE
+from photo_ocr.util.config import config
 from photo_ocr.detection.craft.model import CraftTextDetectionModel
 
 # this github repository re-hosts the pre-trained model open sourced by Clova AI Research / NAVER Corp
@@ -24,20 +24,21 @@ def craft(pretrained, progress):
         return weights
 
     model = CraftTextDetectionModel()
+    device = config.get_device()
 
     if pretrained:
         # load the weights for the main craft model
-        state_dict = load_state_dict_from_url(model_urls['craft'], progress=progress, map_location=DEVICE)
+        state_dict = load_state_dict_from_url(model_urls['craft'], progress=progress, map_location=device)
         state_dict = rename_layers(state_dict)
         model.craft.load_state_dict(state_dict)
 
         # load the weights for the additional refiner model
-        state_dict = load_state_dict_from_url(model_urls['refine_net'], progress=progress, map_location=DEVICE)
+        state_dict = load_state_dict_from_url(model_urls['refine_net'], progress=progress, map_location=device)
         state_dict = rename_layers(state_dict)
         model.refiner.load_state_dict(state_dict)
 
-    model.craft = model.craft.to(DEVICE)
-    model.refiner = model.refiner.to(DEVICE)
+    model.craft = model.craft.to(device)
+    model.refiner = model.refiner.to(device)
 
     return model
 

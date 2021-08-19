@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from torchvision.models.utils import load_state_dict_from_url
 
-from photo_ocr.util.cuda import DEVICE
+from photo_ocr.util.config import config
 from photo_ocr.recognition.models.base import TextRecognitionModel
 from photo_ocr.recognition.models.modules.wrappers import transformation, feature_extraction, sequence_modeling, prediction
 
@@ -48,7 +48,7 @@ def _rename_layers(weights):
 
 
 def _load_weights(model, url, progress):
-    state_dict = load_state_dict_from_url(url, progress=progress, map_location=DEVICE)
+    state_dict = load_state_dict_from_url(url, progress=progress, map_location=config.get_device())
     state_dict = _rename_layers(state_dict)
     model.load_state_dict(state_dict)
 
@@ -66,7 +66,7 @@ def None_VGG_None_CTC(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['None_VGG_None_CTC'], progress)
 
-    return model.to(DEVICE)
+    return model.to(config.get_device())
 
 
 def None_ResNet_None_CTC(image_shape, pretrained, progress):
@@ -82,7 +82,7 @@ def None_ResNet_None_CTC(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['None_ResNet_None_CTC'], progress)
 
-    return model.to(DEVICE)
+    return model.to(config.get_device())
 
 
 def TPS_ResNet_BiLSTM_Attn(image_shape, pretrained, progress):
@@ -98,7 +98,7 @@ def TPS_ResNet_BiLSTM_Attn(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['TPS_ResNet_BiLSTM_Attn'], progress)
 
-    return model.to(DEVICE)
+    return model.to(config.get_device())
 
 
 def TPS_ResNet_BiLSTM_Attn_case_sensitive(image_shape, pretrained, progress):
@@ -114,7 +114,7 @@ def TPS_ResNet_BiLSTM_Attn_case_sensitive(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['TPS_ResNet_BiLSTM_Attn_case_sensitive'], progress)
 
-    return model.to(DEVICE)
+    return model.to(config.get_device())
 
 
 def TPS_ResNet_BiLSTM_CTC(image_shape, pretrained, progress):
@@ -130,4 +130,4 @@ def TPS_ResNet_BiLSTM_CTC(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['TPS_ResNet_BiLSTM_CTC'], progress)
 
-    return model.to(DEVICE)
+    return model.to(config.get_device())

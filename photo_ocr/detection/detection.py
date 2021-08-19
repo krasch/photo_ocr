@@ -6,7 +6,7 @@ from photo_ocr.typing import Polygon
 from photo_ocr.detection.model_zoo import craft
 from photo_ocr.detection.craft.preprocessing import calculate_resize_ratio, init_transforms
 from photo_ocr.detection.craft.postprocessing import init_postprocessing
-from photo_ocr.util.cuda import DEVICE
+from photo_ocr.util.config import config
 
 
 class Detection:
@@ -88,7 +88,7 @@ class Detection:
         # forward pass
         # score_text = for each pixel, how likely is it that this pixel is part of a text character
         # link_text = for each pixel, how likely it is that this pixel is between two text characters
-        batch = image.unsqueeze(0).to(DEVICE)
+        batch = image.unsqueeze(0).to(config.get_device())
         score_text, score_link = self.model(batch, refine=self.combine_words_to_lines)
 
         # only have one image, so just grab the first result
