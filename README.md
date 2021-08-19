@@ -242,7 +242,7 @@ from photo_ocr import ocr
 
 ### Troubleshooting OCR results
 
-| Example | Description |  Reason | What to try | 
+| Example | Description |  Reason | Solution | 
 :---: | :--- | :--- | :--- |
 ![](https://raw.githubusercontent.com/krasch/photo_ocr/master/docs/images/umlaut.jpg) | Special letters (e.g. å, ö, ñ) are not recognized properly | The models have been trained on latin letters only. In most cases, the recognition still works well, with the model using similar-looking substitutes for the special letters. | Use a spellchecker after running text recognition to get the correct letters. |
 ![](https://raw.githubusercontent.com/krasch/photo_ocr/master/docs/images/gol.jpg) | Special characters (e.g. !, ?, ;) are not recognized properly | The default text recognition model supports only the characters a-z and 0-9. | Switch to the <a href="#param-model">case-sensitive model</a>, which also supports 30 common special characters. 
