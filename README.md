@@ -238,7 +238,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]=""
 from photo_ocr import ocr
 ```
 
-## <a id="section-troubleshooting">5. Troubleshooting</a>
+## <a id="section-troubleshooting">4. Troubleshooting</a>
 
 ### Troubleshooting OCR results
 
@@ -262,7 +262,7 @@ images being fed to the detection model, resulting in a faster text detection. A
 might be that smaller text areas are no longer found by the model in the smaller image.
 
 To speed up __recognition__, try switching to a faster <a id="param-model">model</a>. You might lose some
-recognition confidence, though. You can also try increasing the <a id="param-batch_size">batch_size</a>  (this
+recognition confidence, though. You can also try increasing the <a href="#param-batch_size">batch_size</a>  (this
 makes most sense if your images contain a lot of text instances).
 
 
