@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 
-from photo_ocr.util.config import config
+from photo_ocr.util.cuda import DEVICE
 
 
 def run_in_batches(model, images, batch_size):
@@ -10,7 +10,7 @@ def run_in_batches(model, images, batch_size):
     batches = DataLoader(images, batch_size=batch_size, shuffle=False, num_workers=1, pin_memory=False)
 
     for batch in batches:
-        batch = batch.to(config.get_device())
+        batch = batch.to(DEVICE)
 
         # run the model on the batch
         predictions = model(batch).cpu().data.numpy()

@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from photo_ocr.util.config import config  # photo_ocr: replaced manual call to get device
+from photo_ocr.util.cuda import DEVICE  # photo_ocr: replaced manual call to get device
 
 
 class Attention(nn.Module):
@@ -21,7 +21,7 @@ class Attention(nn.Module):
     def _char_to_onehot(self, input_char, onehot_dim=38):
         input_char = input_char.unsqueeze(1)
         batch_size = input_char.size(0)
-        one_hot = torch.FloatTensor(batch_size, onehot_dim).zero_().to(config.get_device())
+        one_hot = torch.FloatTensor(batch_size, onehot_dim).zero_().to(DEVICE)
         one_hot = one_hot.scatter_(1, input_char, 1)
         return one_hot
 
@@ -35,7 +35,7 @@ class Attention(nn.Module):
         batch_size = batch_H.size(0)
         num_steps = batch_max_length + 1  # +1 for [s] at end of sentence.
 
-        device = config.get_device()
+        device = DEVICE
 
         output_hiddens = torch.FloatTensor(batch_size, num_steps, self.hidden_size).fill_(0).to(device)
         hidden = (torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(device),

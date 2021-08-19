@@ -7,8 +7,6 @@ from photo_ocr.typing import RecognitionResult
 from photo_ocr.recognition.model_zoo import TPS_ResNet_BiLSTM_Attn
 from photo_ocr.recognition.models.preprocessing import init_transforms
 from photo_ocr.util.batchify import run_in_batches
-from photo_ocr.util.config import config
-
 
 class Recognition:
     def __init__(self,
@@ -42,12 +40,13 @@ class Recognition:
         # converting prediction scores to predicted characters
         self.postprocess = self.model.decode
 
-    def __call__(self, images: List[Image.Image]) -> List[RecognitionResult]:
+    def __call__(self, images: List[Image.Image], batch_size: int=32) -> List[RecognitionResult]:
         """
 
         Run the text recognition model on the given images.
 
         :param images:
+        :param batch_size:
         :return: List of recognition results, same length and order as input array. Each recognition result is
                 a tuple of (word, confidence)
         """
@@ -57,7 +56,7 @@ class Recognition:
         # run the prediction, avoid memory errors by doing that in batches
         # run_in_batches is a generator function -> wrap in list
         with torch.no_grad():
-            scores = list(run_in_batches(self.model, images, batch_size=config.get_recognition_batch_size()))
+            scores = list(run_in_batches(self.model, images, batch_size=batch_size))
 
         # convert the predicted scores into the actual characters
         results = [self.postprocess(pred) for pred in scores]
