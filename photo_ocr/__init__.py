@@ -1,6 +1,7 @@
 from photo_ocr.photo_ocr import ocr, detection, recognition, PhotoOCR
 from photo_ocr.util.image import load_image, draw_ocr, draw_detections
 
+
 # this warning shows up when using torchvision==0.10.0
 # it is caused internally by torch==1.9.0 and will be fixed in the next pytorch release
 # see https://github.com/pytorch/pytorch/issues/54846

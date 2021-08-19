@@ -212,8 +212,35 @@ crop = load_image("crop.jpg")
 text, confidence = recognition(crop)
 ```
 
+### GPU usage
+
+If you have a GPU, photo_ocr will automatically use it! 
+
+If you have multiple GPUs and want photo_ocr to use a different
+one, you can set the `CUDA_VISIBLE_DEVICES` environment
+variable, as shown below. Make sure that you import photo_ocr only after you
+have set the environment variable!
+
+```python
+import os
+
+# if you have e.g. 4 GPUs, you can set their usage order like this
+# (photo_ocr will only look at the first entry in the list 
+#  and ignore the others, since it runs only one GPU)
+os.environ["CUDA_VISIBLE_DEVICES"]="1,0,2,3"
+
+# you can also choose to run on cpu despite having a GPU
+# (=simply make no device visible to photo_ocr)
+os.environ["CUDA_VISIBLE_DEVICES"]=""
+
+# only import photo_ocr after you have set the environment variable
+# otherwise photo_ocr will use the wrong GPU!
+from photo_ocr import ocr
+```
+
 ## <a id="section-troubleshooting">4. Troubleshooting</a>
 
+### Troubleshooting OCR results
 
 | Example | Description |  Reason | Solution | 
 :---: | :--- | :--- | :--- |
@@ -223,9 +250,23 @@ text, confidence = recognition(crop)
 ![](https://raw.githubusercontent.com/krasch/photo_ocr/master/docs/images/borders.jpg)  | Text area is not found. | - | Try decreasing the <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, decrease the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>. |
 ![](https://raw.githubusercontent.com/krasch/photo_ocr/master/docs/images/cow.jpg)  | Text area is found where there is no text. | - | Try increasing the  <a href="#param-confidence_threshold">confidence threshold</a>. Alternatively, increase the <a href="#param-text_threshold_first_pass">text_threshold_first_pass</a> and <a href="#param-text_threshold_second_pass">text_threshold_second_pass</a>.  |
 
+### Speeding things up
+
+If photo_ocr is too slow for your use case, try first to identify
+if the detection or the recognition step (or both) are running
+slow on your images by running both steps in isolation (see above).
+
+To speed up __detection__, try decreasing the <a href="#param-image_max_size">image_max_size</a> 
+and/or the <a href="#param-image_magnification">image_magnification</a>. This will result in smaller
+images being fed to the detection model, resulting in a faster text detection. An unwanted side effect
+might be that smaller text areas are no longer found by the model in the smaller image.
+
+To speed up __recognition__, try switching to a faster <a href="#param-model">model</a>. You might lose some
+recognition confidence, though. You can also try increasing the <a href="#param-batch_size">batch_size</a>  (this
+makes most sense if your images contain a lot of text instances).
 
 
-## <a id="section-parameters">5. Detailed configuration / parameters </a>
+## <a id="section-parameters">5. Detailed configuration / parameters  </a>
 
 
 ### Runtime parameters
@@ -266,7 +307,7 @@ need to initialise these methods again with your own settings (see [initialisati
 <a id="param-image_width">image_width</a> | During image pre-processing, the (cropped) image will be resized to this width models were trained with width=100, other values don't seem to work as well | an integer, default=100|
 <a id="param-image_height">image_height</a> | During image pre-processing, the (cropped) image will be resized to this height;  models were trained with height=32, other values don't seem to work as well | an integer, default=32|
 <a id="param-keep_ratio">keep_ratio</a> | When resizing images during pre-processing: True -> keep the width/height ratio (and pad appropriately) or False -> simple resize without keeping ratio| a boolean, default=False| 
-
+<a id="param-batch_size">batch_size</a> | Size of the batches to be fed to the model. | an integer, default=32| 
 
 
 ##### <a id="section-initialisation-code">Initialisation code<a>
@@ -299,7 +340,7 @@ recognition = photo_ocr.recognition
 ```
 
 
-##### <a id="section-licensing">Licensing</a>
+## <a id="section-licensing">Licensing</a>
 
 This repository contains three license files:
 

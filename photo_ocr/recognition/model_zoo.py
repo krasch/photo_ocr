@@ -66,7 +66,7 @@ def None_VGG_None_CTC(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['None_VGG_None_CTC'], progress)
 
-    return model
+    return model.to(DEVICE)
 
 
 def None_ResNet_None_CTC(image_shape, pretrained, progress):
@@ -82,7 +82,7 @@ def None_ResNet_None_CTC(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['None_ResNet_None_CTC'], progress)
 
-    return model
+    return model.to(DEVICE)
 
 
 def TPS_ResNet_BiLSTM_Attn(image_shape, pretrained, progress):
@@ -98,7 +98,7 @@ def TPS_ResNet_BiLSTM_Attn(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['TPS_ResNet_BiLSTM_Attn'], progress)
 
-    return model
+    return model.to(DEVICE)
 
 
 def TPS_ResNet_BiLSTM_Attn_case_sensitive(image_shape, pretrained, progress):
@@ -114,7 +114,7 @@ def TPS_ResNet_BiLSTM_Attn_case_sensitive(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['TPS_ResNet_BiLSTM_Attn_case_sensitive'], progress)
 
-    return model
+    return model.to(DEVICE)
 
 
 def TPS_ResNet_BiLSTM_CTC(image_shape, pretrained, progress):
@@ -130,4 +130,4 @@ def TPS_ResNet_BiLSTM_CTC(image_shape, pretrained, progress):
     if pretrained:
         _load_weights(model, model_urls['TPS_ResNet_BiLSTM_CTC'], progress)
 
-    return model
+    return model.to(DEVICE)

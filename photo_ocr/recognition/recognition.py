@@ -14,7 +14,8 @@ class Recognition:
                  model: Callable = TPS_ResNet_BiLSTM_Attn,
                  image_width:  int = 100,
                  image_height: int = 32,
-                 keep_ratio:   bool = False):
+                 keep_ratio:   bool = False,
+                 batch_size: int = 32):
         """
 
         Convenience class for text recognition.
@@ -28,6 +29,7 @@ class Recognition:
                              models were trained with height=32, other values don't seem to work as well
         :param keep_ratio:  When resizing images during pre-processing: True -> keep the width/height
                             ratio (and pad appropriately) or False -> simple resize without keeping ratio
+        :param batch_size: Size of the batches to be fed to the model.
         """
 
         # grayscale, resizing, etc
@@ -40,6 +42,8 @@ class Recognition:
 
         # converting prediction scores to predicted characters
         self.postprocess = self.model.decode
+
+        self.batch_size = batch_size
 
     def __call__(self, images: List[Image.Image]) -> List[RecognitionResult]:
         """
@@ -56,7 +60,7 @@ class Recognition:
         # run the prediction, avoid memory errors by doing that in batches
         # run_in_batches is a generator function -> wrap in list
         with torch.no_grad():
-            scores = list(run_in_batches(self.model, images, batch_size=2))
+            scores = list(run_in_batches(self.model, images, batch_size=self.batch_size))
 
         # convert the predicted scores into the actual characters
         results = [self.postprocess(pred) for pred in scores]
