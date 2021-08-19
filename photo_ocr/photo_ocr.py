@@ -115,7 +115,6 @@ class PhotoOCR:
 
         # run recognition on each of the cropped images, returns for each image a tuple of (word, confidence)
         recognitions = self.recognition(crops)
-        #recognitions = [self.recognition(crop) for crop in crops]
 
         # put detection results and recognition results together in a ocr result tuple
         results = [OCRResult(polygon, rec.text, rec.confidence) for polygon, rec in zip(text_polygons, recognitions)]
