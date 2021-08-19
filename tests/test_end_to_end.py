@@ -36,7 +36,7 @@ def test_end_to_end():
 
         # decimal=2 because quite a bit of variation based on the opencv version
         # but getting the pixel correct to 0.01 accuracy should be good enough...
-        assert_array_almost_equal(polygon_actual, polygon_expected, decimal=3)
-        assert_almost_equal(confidence_actual, confidence_expected, decimal=3)
+        assert_array_almost_equal(polygon_actual, polygon_expected, decimal=2)
+        assert_almost_equal(confidence_actual, confidence_expected, decimal=2)
         assert text_actual == text_expected
 
