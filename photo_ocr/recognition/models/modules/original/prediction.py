@@ -35,11 +35,9 @@ class Attention(nn.Module):
         batch_size = batch_H.size(0)
         num_steps = batch_max_length + 1  # +1 for [s] at end of sentence.
 
-        device = DEVICE
-
-        output_hiddens = torch.FloatTensor(batch_size, num_steps, self.hidden_size).fill_(0).to(device)
-        hidden = (torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(device),
-                  torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(device))
+        output_hiddens = torch.FloatTensor(batch_size, num_steps, self.hidden_size).fill_(0).to(DEVICE)
+        hidden = (torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(DEVICE),
+                  torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(DEVICE))
 
         if is_train:
             for i in range(num_steps):
@@ -51,8 +49,8 @@ class Attention(nn.Module):
             probs = self.generator(output_hiddens)
 
         else:
-            targets = torch.LongTensor(batch_size).fill_(0).to(device)  # [GO] token
-            probs = torch.FloatTensor(batch_size, num_steps, self.num_classes).fill_(0).to(device)
+            targets = torch.LongTensor(batch_size).fill_(0).to(DEVICE)  # [GO] token
+            probs = torch.FloatTensor(batch_size, num_steps, self.num_classes).fill_(0).to(DEVICE)
 
             for i in range(num_steps):
                 char_onehots = self._char_to_onehot(targets, onehot_dim=self.num_classes)
