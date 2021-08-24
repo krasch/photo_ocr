@@ -14,12 +14,16 @@ CHARACTERS_CASE_SENSITIVE = CHARACTERS + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&
 # see README.md#section-licensing and LICENSE_RECOGNITION.txt
 BASE_URL = "https://github.com/krasch/photo_ocr_models/releases/download/text-recognition-models-20201210/"
 
+# pytorch saves model files in a flat file structure
+# -> use this filename prefix to make model files easily recognizable and give some version info
+PREFIX = "text-recognition-20201210__"
+
 model_urls = {
-    "None_VGG_None_CTC": BASE_URL + "None-VGG-None-CTC.pth",
-    "None_ResNet_None_CTC": BASE_URL + "None-ResNet-None-CTC.pth",
-    "TPS_ResNet_BiLSTM_Attn": BASE_URL + "TPS-ResNet-BiLSTM-Attn.pth",
-    "TPS_ResNet_BiLSTM_Attn_case_sensitive": BASE_URL + "TPS-ResNet-BiLSTM-Attn-case-sensitive.pth",
-    "TPS_ResNet_BiLSTM_CTC": BASE_URL + "TPS-ResNet-BiLSTM-CTC.pth"
+    "None_VGG_None_CTC": BASE_URL + PREFIX + "None-VGG-None-CTC-96b860b2.pth",
+    "None_ResNet_None_CTC": BASE_URL + PREFIX + "None-ResNet-None-CTC-5846635e.pth",
+    "TPS_ResNet_BiLSTM_Attn": BASE_URL + PREFIX + "TPS-ResNet-BiLSTM-Attn-1b753d38.pth",
+    "TPS_ResNet_BiLSTM_Attn_case_sensitive": BASE_URL + PREFIX + "TPS-ResNet-BiLSTM-Attn-case-sensitive-0739577f.pth",
+    "TPS_ResNet_BiLSTM_CTC": BASE_URL + PREFIX + "TPS-ResNet-BiLSTM-CTC-1cb59b21.pth"
 }
 
 
@@ -48,7 +52,7 @@ def _rename_layers(weights):
 
 
 def _load_weights(model, url, progress):
-    state_dict = load_state_dict_from_url(url, progress=progress, map_location=DEVICE)
+    state_dict = load_state_dict_from_url(url, progress=progress, map_location=DEVICE, check_hash=True)
     state_dict = _rename_layers(state_dict)
     model.load_state_dict(state_dict)
 
