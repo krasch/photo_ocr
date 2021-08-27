@@ -7,6 +7,7 @@ from photo_ocr.typing import OCRResult, RecognitionResult, Polygon
 from photo_ocr.detection.detection import Detection
 from photo_ocr.recognition.recognition import Recognition
 from photo_ocr.util.image import crop_and_align
+from photo_ocr.util.batchify import flatten
 
 
 class InputType(Enum):
@@ -99,31 +100,41 @@ class PhotoOCR:
 
         # run the ocr
         if input_type == InputType.SINGLE_IMAGE:
-            return self._ocr_one(images, confidence_threshold)
+            return self._run_ocr([images], confidence_threshold)[0]
         else:
-            return [self._ocr_one(image, confidence_threshold) for image in images]
+            return self._run_ocr(images, confidence_threshold)
 
-    def _ocr_one(self,
-                 image: Image.Image,
-                 confidence_threshold: float) -> List[OCRResult]:
+    def _run_ocr(self,
+                 images: List[Image.Image],
+                 confidence_threshold: float) -> List[List[OCRResult]]:
 
-        # get bounding polygons of all words in the image
-        text_polygons = self.detection(image)
+        # for all images: get bounding polygons of all words in the image
+        polygons = self.detection(images)
 
         # cut out each of the found words and align horizontally
-        crops = [crop_and_align(image, polygon) for polygon in text_polygons]
+        crops = [crop_and_align(image, polygons_for_image) for image, polygons_for_image in zip(images, polygons)]
 
-        # run recognition on each of the cropped images, returns for each image a tuple of (word, confidence)
+        # to benefit from batch processing in text recognition, take the nested list of polygons per image
+        # and turn it into a flat list of all polygons; unflatten function allows us to reverse this later
+        crops, unflatten = flatten(crops)
+
+        # run recognition on each of the cropped images, returns for each crop a tuple of (word, confidence)
         recognitions = self.recognition(crops)
 
-        # put detection results and recognition results together in a ocr result tuple
-        results = [OCRResult(polygon, rec.text, rec.confidence) for polygon, rec in zip(text_polygons, recognitions)]
+        # turn flat list of recognitions over all images into a nested list of recognitions per image
+        recognitions = unflatten(recognitions)
 
-        # keep only the high-confidence words
-        results = [result for result in results if result.confidence >= confidence_threshold]
+        # for each image, wrap detection results and recognition results together in ocr result tuples,
+        results = [[OCRResult(polygon, rec.text, rec.confidence) for polygon, rec in zip(*results_for_image)]
+                   for results_for_image in zip(polygons, recognitions)]
 
-        # most confident results come first
-        results = sorted(results, key=lambda item: item.confidence, reverse=True)
+        # for each image, keep only the high-confidence words
+        results = [[result for result in results_for_image if result.confidence >= confidence_threshold]
+                   for results_for_image in results]
+
+        # for each image,  most confident results come first
+        results = [sorted(results_for_image, key=lambda item: item.confidence, reverse=True)
+                   for results_for_image in results]
 
         return results
 
