@@ -27,7 +27,7 @@ def _sort_clockwise(box: np.array) -> np.array:
     return box
 
 
-def crop_and_align(image: Image.Image, polygon: np.array):
+def crop_and_align_one(image: Image.Image, polygon: np.array):
     """
     Crop and warp image so that it only contains the word selected by the bounding polygon, horizontally aligned
     :param image:
@@ -55,6 +55,16 @@ def crop_and_align(image: Image.Image, polygon: np.array):
     cropped = Image.fromarray(cropped)
 
     return cropped
+
+
+def crop_and_align(image: Image.Image, polygons: List[np.array]) -> List[Image.Image]:
+    """
+    Run crop and align for each of the polygons.
+    :param image:
+    :param polygons:
+    :return:
+    """
+    return [crop_and_align_one(image, polygon) for polygon in polygons]
 
 
 def draw_ocr(image: Image.Image, results: List[OCRResult]) -> Image.Image:
