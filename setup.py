@@ -16,7 +16,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     python_requires=">=3.6,<3.9",
-    install_requires=["torchvision>=0.7.0,<=0.10", "opencv-python>=3.4", "bbdraw"],
+    install_requires=["torchvision>=0.7.0,<=0.10", "opencv-python==3.4.8.29", "bbdraw"],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
