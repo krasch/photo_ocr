@@ -87,7 +87,11 @@ photo_ocr works with torchvision >=0.7 and <=0.10. If there is a newer version o
 by photo_ocr, please open a github issue to let us know!
 
 ```
-pip install photo_ocr
+git clone https://github.com/krasch/photo_ocr.git
+python setup.py install
+
+# check that everything is working
+python example.py
 ```
 
 
